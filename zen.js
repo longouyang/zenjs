@@ -1,0 +1,379 @@
+// ******Compatibility*****
+// Support getElementsByClassName
+document.getElementsByClassName = document.getElementsByClassName || function (searchClass) {
+        var classElements = new Array();
+        var node = document;
+        var tag = 'div';
+        var els = node.getElementsByTagName('*');
+        var elsLen = els.length;
+        var pattern = new RegExp("(^|\\s)"+searchClass+"(\\s|$)");
+        for (i = 0, j = 0; i < elsLen; i++) {
+                if ( pattern.test(els[i].className) ) {
+                        classElements[j] = els[i];
+                        j++;
+                }
+        }
+        return classElements;
+}
+
+/*** Array functions **/
+
+Array.prototype.sum = function() {
+	var i = this.length;
+	var s=0;
+	while(i--) {
+		s += this[i];
+	}
+	return s;
+}
+
+Array.prototype.average = function() {
+	if (!this.length) return 0;
+	return this.sum()/this.length;
+}
+
+Array.prototype.unique = function () {
+	var r=this.concat(), n = this.length;
+	for(var i=0;i<n;i++) {
+		for(var j=i+1;j<n;j++) {
+			if (r[i]==r[j]) {
+				r.splice(j--,1);
+				n--;
+			}
+		}
+	}
+	return r;
+}
+
+Array.prototype.contains = function(obj) {
+  var i = this.length;
+  while (i--) {
+    if (this[i] === obj) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Define indexOf for browsers that don't implement it correctly (IE6, 7)
+if(!Array.prototype.indexOf)
+{
+	Array.prototype.indexOf = function(obj){
+		for(var i=0; i<this.length; i++){
+			if(this[i]==obj){
+				return i;
+			}
+		}
+		return -1;
+	}
+}
+
+// Define the map pattern if the browser's Javascript implementation doesn't
+// have it.
+if (!Array.prototype.map)
+{
+  Array.prototype.map = function(fun /*, thisp*/) {
+    var len = this.length >>> 0;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    var res = new Array(len);
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++) {
+      if (i in this)
+        res[i] = fun.call(thisp, this[i], i, this);
+ 	}
+
+    return res;
+  };
+}
+
+// Define the reduce pattern if the browser's Javascript implementation
+// doesn't have it.
+if (!Array.prototype.reduce)
+{
+  Array.prototype.reduce = function(fun /*, initial*/)
+  {
+    var len = this.length >>> 0;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    // no value to return if no initial value and an empty array
+    if (len == 0 && arguments.length == 1)
+      throw new TypeError();
+
+    var i = 0;
+    if (arguments.length >= 2)
+    {
+      var rv = arguments[1];
+    }
+    else
+    {
+      do
+      {
+        if (i in this)
+        {
+          rv = this[i++];
+          break;
+        }
+
+        // if array contains no values, no initial value to return
+        if (++i >= len)
+          throw new TypeError();
+      }
+      while (true);
+    }
+
+    for (; i < len; i++)
+    {
+      if (i in this)
+        rv = fun.call(null, rv, this[i], i, this);
+    }
+
+    return rv;
+  };
+}
+
+
+// Define the filter pattern
+if (!Array.prototype.filter)
+{
+  Array.prototype.filter = function(fun /*, thisp*/)
+  {
+    var len = this.length >>> 0;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    var res = [];
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++)
+    {
+      if (i in this)
+      {
+        var val = this[i]; // in case fun mutates this
+        if (fun.call(thisp, val, i, this))
+          res.push(val);
+      }
+    }
+
+    return res;
+  };
+}
+
+// Deploy homebrew JSON implementation only if the browser doesn't implement
+// Object.prototype.hasOwnProperty. Otherwise, we should use Crockford's
+// JSON implementation.
+
+var JSON;
+
+if (!Object.prototype.hasOwnProperty)
+{
+
+JSON = {};
+
+// implement JSON.stringify serialization
+JSON.stringify = function (obj) {
+
+	var t = typeof (obj);
+	if (t != "object" || obj === null) {
+
+		// simple data type
+		if (t == "string") obj = '"'+obj+'"';
+		return (t == "function") ? "" : String(obj);
+
+	}
+	else {
+
+		// recurse array or object
+		var n, v, json = [], arr = (obj && obj.constructor == Array);
+
+		for (n in obj) {
+			//document.write(n);
+			v = obj[n]; t = typeof(v);
+
+			if (t == "string") v = '"'+v+'"';
+			else if (t == "object" && v !== null) v = JSON.stringify(v);
+
+			if (t != "function") json.push((arr ? "" : '"' + n + '":') + String(v));
+		}
+
+		return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+	}
+};
+
+// implement JSON.parse de-serialization
+JSON.parse = function (str) {
+	if (str === "") str = '""';
+	eval("var p=" + str + ";");
+	return p;
+};
+}
+
+
+// range from m to n
+function range(m,n) {
+	a = [];
+	for(var i=m;i<=n;i++) {
+		a.push(i);
+	}
+	return a;
+}
+
+
+// DOM element lookup with caching
+var ___elements = {};
+function $$$(id) { 
+	if (!___elements[id]) 
+		___elements[id] = document.getElementById(id);
+	return ___elements[id]
+}
+
+// Show slide with id and hide the rest
+// Optimizations - it skips DOM elements that already have the
+// right visibility value set
+var __slides;
+function show_slide(id) {
+	__slides = __slides || document.getElementsByClassName("slide");
+	var i = __slides.length;
+	while(i--) {
+		var change_to = (__slides[i].id == id ? 'block' : 'none');
+ 		if (__slides[i].style.display == change_to) continue;
+		__slides[i].style.display = change_to;
+	}
+}
+
+// Checking data
+function AssertException(message) { this.message = message; }
+AssertException.prototype.toString = function () {
+  return 'AssertException: ' + this.message;
+}
+
+function assert(exp, message) {
+  if (!exp) {
+	alert('Error: ' + message + '. Please let the experimenter know about this error.');
+    throw new AssertException(message);
+  }
+}
+
+function is_array(obj) {
+	return obj.constructor == Array;
+}
+
+function is_array_of(cl,obj) {
+	if (obj.constructor != Array) return false;
+	for(i in obj) {
+		if (obj[i].constructor != cl) return false;
+	}
+	return true;
+}
+
+function is_positive_number(x) {
+	return (typeof x ==='number') && (x > 0);
+}
+
+function is_natural_number(x) {
+	return (typeof x === 'number') && (x % 1 == 0) && (x > 0);
+}
+
+// Getting user input
+
+/*
+A remark on reaction time on Windows (XP, Vista):
+unless you are using Chrome, Safari 3.1+, or Firefox 3+,
+getTime() is only updated every 15ms or so
+(see http://ejohn.org/blog/accuracy-of-javascript-time/).
+
+Time differences are rounded up, so the RT reported here will 
+have a maximum error of 15ms. A reasonable lower bound on RT
+for visual stimuli is 150ms. So there is a 10% error rate for these browsers
+on Windows.
+
+I haven't looked up the numbers for auditory stimuli, but on average reaction
+time to auditory stimuli occurs is faster.
+
+TODO: understand the time resolution of operating systems themselves.
+*/
+
+
+function get_keyboard_input(accepted_responses, state, callback, duration) {
+	var start_time = (new Date()).getTime();
+	var end_time;
+	
+	// monitor for keypresses
+	document.onkeydown = function(e) {
+		end_time = (new Date()).getTime();
+		var value = response_value(window.event ? event.keyCode : e.keyCode);
+		// ignore keys pressed not in accepted_responses
+		// e.g. if user accidentally pressed another key
+		if (accepted_responses.contains(value)) {
+			var user_input = {'response': value, 'rt': end_time - start_time};
+			callback(state, user_input);
+		}
+	}
+	
+	if (duration) setTimeout("document.onkeyup = null;", duration);
+}
+
+var enter = 13;
+var escape = 27;
+var space = 32;
+var left = 37;
+var up = 38;
+var right = 39;
+var down = 40;
+
+function response_value(key_code) {
+	if ([enter, escape, space, left, up, right, down].contains(key_code)) return key_code;
+	// numbers
+	if (key_code > 47 && key_code < 58 ) return key_code - 48;
+	// numpad
+	if (key_code > 95 && key_code < 106) return key_code - 96;
+	// characters - doing "abcdef..."[] doesn't work in IE
+	if (key_code > 64 && key_code < 91) return ("abcdefghijklmnopqrstuvwxyz".split(""))[key_code-65];
+	return 0;
+}
+
+function disable_keyboard() {
+	document.onkeydown = null;
+}
+
+/* Algorithms */
+// Fisher-Yates shuffling
+// Source - http://snippets.dzone.com/posts/show/849
+function shuffle(o) {
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
+}
+
+var timeouts = [];
+
+function chain() {
+	if (arguments.length == 1 && is_array(arguments[0])) arguments = arguments[0];
+	if (arguments.length % 2) return; // require an even number of arguments
+	// uses arguments.length b/c different browsers are weird with "for var i in arguments"
+	for(var execute_time=0,i=0;i<arguments.length;i+=2, execute_time += arguments[i-1])
+		timeouts.push(setTimeout(arguments[i], execute_time));
+}
+
+function clear_chain() {
+	for(var i=0;i<timeouts.length;i++)
+		clearTimeout(timeouts[i]);
+}
+
+// Preload images sequentially (trickle), rather than all at once (torrent).
+// This is actually slower on faster computers, but it's guaranteed to work
+// on slower computers.
+function preload_trickle(names, id, callback) {
+	var name = names.shift();
+	if (!name) {
+		callback();
+		return;
+	}
+	var image = new Image();
+	image.onload = function() { 
+		$$$(id).innerHTML = parseInt($$$(id).innerHTML) + 1;
+		setTimeout(function() {preload_trickle(names,id,callback) }, 0);
+	};
+	image.src = name;
+}
+
