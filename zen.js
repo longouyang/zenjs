@@ -1,5 +1,25 @@
-// ******Compatibility*****
-// Support getElementsByClassName
+/*
+zen.js - a library for browser-based behavioral experiments
+version: 0.0.2
+http://www.zenjs.org/
+
+This library is separated into a number of different parts:
+browser compatibility fixes
+utility functions
+presentation functions
+
+changelog:
+reorganized functions
+changed shuffle() to use Array.prototype
+created zen holder variable
+
+*/
+
+var zen = {};
+
+/* Browser compatibility fixes */
+
+// Fix for IE6
 document.getElementsByClassName = document.getElementsByClassName || function (searchClass) {
         var classElements = new Array();
         var node = document;
@@ -16,48 +36,8 @@ document.getElementsByClassName = document.getElementsByClassName || function (s
         return classElements;
 }
 
-/*** Array functions **/
-
-Array.prototype.sum = function() {
-	var i = this.length;
-	var s=0;
-	while(i--) {
-		s += this[i];
-	}
-	return s;
-}
-
-Array.prototype.average = function() {
-	if (!this.length) return 0;
-	return this.sum()/this.length;
-}
-
-Array.prototype.unique = function () {
-	var r=this.concat(), n = this.length;
-	for(var i=0;i<n;i++) {
-		for(var j=i+1;j<n;j++) {
-			if (r[i]==r[j]) {
-				r.splice(j--,1);
-				n--;
-			}
-		}
-	}
-	return r;
-}
-
-Array.prototype.contains = function(obj) {
-  var i = this.length;
-  while (i--) {
-    if (this[i] === obj) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Define indexOf for browsers that don't implement it correctly (IE6, 7)
-if(!Array.prototype.indexOf)
-{
+if(!Array.prototype.indexOf) {
 	Array.prototype.indexOf = function(obj){
 		for(var i=0; i<this.length; i++){
 			if(this[i]==obj){
@@ -90,8 +70,7 @@ if (!Array.prototype.map)
 
 // Define the reduce pattern if the browser's Javascript implementation
 // doesn't have it.
-if (!Array.prototype.reduce)
-{
+if (!Array.prototype.reduce) {
   Array.prototype.reduce = function(fun /*, initial*/)
   {
     var len = this.length >>> 0;
@@ -134,10 +113,8 @@ if (!Array.prototype.reduce)
   };
 }
 
-
 // Define the filter pattern
-if (!Array.prototype.filter)
-{
+if (!Array.prototype.filter) {
   Array.prototype.filter = function(fun /*, thisp*/)
   {
     var len = this.length >>> 0;
@@ -161,8 +138,8 @@ if (!Array.prototype.filter)
 }
 
 // Deploy homebrew JSON implementation only if the browser doesn't implement
-// Object.prototype.hasOwnProperty. Otherwise, we should use Crockford's
-// JSON implementation.
+// Object.prototype.hasOwnProperty (Safari 2). Otherwise, we should use
+// Crockford's JSON implementation.
 
 var JSON;
 
@@ -209,6 +186,51 @@ JSON.parse = function (str) {
 };
 }
 
+/* Utility functions */
+
+Array.prototype.sum = function() {
+	var i = this.length;
+	var s=0;
+	while(i--) {
+		s += this[i];
+	}
+	return s;
+}
+
+Array.prototype.average = function() {
+	if (!this.length) return 0;
+	return this.sum()/this.length;
+}
+
+Array.prototype.unique = function () {
+	var r=this.concat(), n = this.length;
+	for(var i=0;i<n;i++) {
+		for(var j=i+1;j<n;j++) {
+			if (r[i]==r[j]) {
+				r.splice(j--,1);
+				n--;
+			}
+		}
+	}
+	return r;
+}
+
+Array.prototype.contains = function(obj) {
+  var i = this.length;
+  while (i--) {
+    if (this[i] === obj) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Fisher-Yates shuffling
+// Source - http://snippets.dzone.com/posts/show/849
+Array.prototype.shuffle = function(){
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
+}
 
 // range from m to n
 function range(m,n) {
@@ -221,24 +243,27 @@ function range(m,n) {
 
 
 // DOM element lookup with caching
-var ___elements = {};
+zen.elements = {};
 function $$$(id) { 
-	if (!___elements[id]) 
-		___elements[id] = document.getElementById(id);
-	return ___elements[id]
+	if (!zen.elements[id]) 
+		zen.elements[id] = document.getElementById(id);
+	return zen.elements[id]
 }
 
 // Show slide with id and hide the rest
 // Optimizations - it skips DOM elements that already have the
 // right visibility value set
-var __slides;
 function show_slide(id) {
-	__slides = __slides || document.getElementsByClassName("slide");
-	var i = __slides.length;
+	if (!zen.slides) {
+		zen.slides = document.getElementsByClassName("slide");
+	}
+	var change_to, slides = zen.slides;
+	var i = zen.slides.length;
+	
 	while(i--) {
-		var change_to = (__slides[i].id == id ? 'block' : 'none');
- 		if (__slides[i].style.display == change_to) continue;
-		__slides[i].style.display = change_to;
+		change_to = (slides[i].id == id ? 'block' : 'none');
+ 		if (slides[i].style.display == change_to) continue;
+		slides[i].style.display = change_to;
 	}
 }
 
@@ -337,15 +362,9 @@ function disable_keyboard() {
 	document.onkeydown = null;
 }
 
-/* Algorithms */
-// Fisher-Yates shuffling
-// Source - http://snippets.dzone.com/posts/show/849
-function shuffle(o) {
-	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-	return o;
-}
 
-var timeouts = [];
+
+zen.timeouts = [];
 
 function chain() {
 	if (arguments.length == 1 && is_array(arguments[0])) arguments = arguments[0];
@@ -356,8 +375,8 @@ function chain() {
 }
 
 function clear_chain() {
-	for(var i=0;i<timeouts.length;i++)
-		clearTimeout(timeouts[i]);
+	for(var i=0;i<zen.timeouts.length;i++)
+		clearTimeout(zen.timeouts[i]);
 }
 
 // Preload images sequentially (trickle), rather than all at once (torrent).
