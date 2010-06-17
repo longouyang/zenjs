@@ -384,7 +384,7 @@ function chain() {
 	
 	var len = arguments.length;
 	// uses arguments.length b/c different browsers are weird with "for var i in arguments"
-	for(var i=2, execute_time=parseInt(arguments[i-1]); i<len ; i+=2, execute_time += arguments[i-1]) {
+	for(var i=2, execute_time=arguments[i-1]; i<len ; i+=2, execute_time += arguments[i-1]) {
 		zen.timeouts.push(setTimeout(arguments[i], execute_time));
 	}
 }
