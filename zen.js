@@ -13,13 +13,20 @@ reorganized functions
 changed shuffle() to use Array.prototype
 created zen holder variable
 
+TODO:
+camelCase
+test (write a program)
+documentation system
+jslint?
+
+
 */
 
 var zen = {};
 
 /* Browser compatibility fixes */
 
-// Fix for IE6
+// document.getElementsByClassName fix for IE6
 document.getElementsByClassName = document.getElementsByClassName || function (searchClass) {
         var classElements = new Array();
         var node = document;
@@ -247,7 +254,7 @@ zen.elements = {};
 function $$$(id) { 
 	if (!zen.elements[id]) 
 		zen.elements[id] = document.getElementById(id);
-	return zen.elements[id]
+	return zen.elements[id];
 }
 
 // Show slide with id and hide the rest
@@ -362,16 +369,24 @@ function disable_keyboard() {
 	document.onkeydown = null;
 }
 
-
-
 zen.timeouts = [];
 
+
 function chain() {
-	if (arguments.length == 1 && is_array(arguments[0])) arguments = arguments[0];
-	if (arguments.length % 2) return; // require an even number of arguments
+	// accept a single array as the argument
+	if (arguments.length == 1 && is_array(arguments[0])) arguments = arguments[0]; 
+	
+	// require an odd number of arguments
+	if (arguments.length % 2 == 0) return;
+	
+	// execute the first argument immediately
+	arguments[0]();
+	
+	var len = arguments.length;
 	// uses arguments.length b/c different browsers are weird with "for var i in arguments"
-	for(var execute_time=0,i=0;i<arguments.length;i+=2, execute_time += arguments[i-1])
-		timeouts.push(setTimeout(arguments[i], execute_time));
+	for(var i=2, execute_time=parseInt(arguments[i-1]); i<len ; i+=2, execute_time += arguments[i-1]) {
+		zen.timeouts.push(setTimeout(arguments[i], execute_time));
+	}
 }
 
 function clear_chain() {
