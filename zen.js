@@ -8,18 +8,12 @@ browser compatibility fixes
 utility functions
 presentation functions
 
-changelog:
-reorganized functions
-changed shuffle() to use Array.prototype
-created zen holder variable
-
 TODO:
 camelCase
-test (write a program)
+unit testing
 documentation system
-jslint?
-
-
+jslint
+restyle MDC code
 */
 
 var zen = {};
@@ -232,7 +226,16 @@ Array.prototype.contains = function(obj) {
   return false;
 }
 
-// Fisher-Yates shuffling
+// TODO: generalize?
+Array.prototype.pluck = function(key) {
+	var a = [];
+	for(var i=0,length=this.length;i<length;i++) {
+		a.push(this[i][key]);
+	}
+	return a;
+}
+
+// Uses the Fisher-Yates algorithm.
 // Source - http://snippets.dzone.com/posts/show/849
 Array.prototype.shuffle = function(){
 	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
