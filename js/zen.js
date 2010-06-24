@@ -251,7 +251,6 @@ function range(m,n) {
 	return a;
 }
 
-
 // DOM element lookup with caching
 zen.elements = {};
 function $$$(id) { 
@@ -312,8 +311,6 @@ function isNaturalNumber(x) {
 
 // Getting user input
 
-
-
 function get_keyboard_input(accepted_responses, state, callback, duration) {
 	var start_time = (new Date()).getTime();
 	var end_time;
@@ -330,9 +327,10 @@ function get_keyboard_input(accepted_responses, state, callback, duration) {
 		}
 	}
 	
-	if (duration) setTimeout("document.onkeyup = null;", duration);
+	if (duration) setTimeout("document.onkeydown = null;", duration);
 }
 
+// TODO: encapsulate in zen.keys
 var enter = 13;
 var escape = 27;
 var space = 32;
@@ -341,7 +339,7 @@ var up = 38;
 var right = 39;
 var down = 40;
 
-function response_value(key_code) {
+function keyValue(key_code) {
 	if ([enter, escape, space, left, up, right, down].contains(key_code)) return key_code;
 	// numbers
 	if (key_code > 47 && key_code < 58 ) return key_code - 48;
@@ -352,7 +350,7 @@ function response_value(key_code) {
 	return 0;
 }
 
-function disable_keyboard() {
+function disableKeyboard() {
 	document.onkeydown = null;
 }
 
