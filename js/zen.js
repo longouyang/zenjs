@@ -263,7 +263,7 @@ function $$$(id) {
 // Show slide with id and hide the rest
 // Optimizations - it skips DOM elements that already have the
 // right visibility value set
-function show_slide(id) {
+function showSlide(id) {
 	if (!zen.slides) {
 		zen.slides = document.getElementsByClassName("slide");
 	}
@@ -290,11 +290,11 @@ function assert(exp, message) {
   }
 }
 
-function is_array(obj) {
+function isArray(obj) {
 	return obj.constructor == Array;
 }
 
-function is_array_of(cl,obj) {
+function isArrayOf(cl,obj) {
 	if (obj.constructor != Array) return false;
 	for(i in obj) {
 		if (obj[i].constructor != cl) return false;
@@ -302,32 +302,16 @@ function is_array_of(cl,obj) {
 	return true;
 }
 
-function is_positive_number(x) {
+function isPositiveNumber(x) {
 	return (typeof x ==='number') && (x > 0);
 }
 
-function is_natural_number(x) {
+function isNaturalNumber(x) {
 	return (typeof x === 'number') && (x % 1 == 0) && (x > 0);
 }
 
 // Getting user input
 
-/*
-A remark on reaction time on Windows (XP, Vista):
-unless you are using Chrome, Safari 3.1+, or Firefox 3+,
-getTime() is only updated every 15ms or so
-(see http://ejohn.org/blog/accuracy-of-javascript-time/).
-
-Time differences are rounded up, so the RT reported here will 
-have a maximum error of 15ms. A reasonable lower bound on RT
-for visual stimuli is 150ms. So there is a 10% error rate for these browsers
-on Windows.
-
-I haven't looked up the numbers for auditory stimuli, but on average reaction
-time to auditory stimuli occurs is faster.
-
-TODO: understand the time resolution of operating systems themselves.
-*/
 
 
 function get_keyboard_input(accepted_responses, state, callback, duration) {
@@ -374,10 +358,9 @@ function disable_keyboard() {
 
 zen.timeouts = [];
 
-
 function chain() {
 	// accept a single array as the argument
-	if (arguments.length == 1 && is_array(arguments[0])) arguments = arguments[0]; 
+	if (arguments.length == 1 && isArray(arguments[0])) arguments = arguments[0]; 
 	
 	// require an odd number of arguments
 	if (arguments.length % 2 == 0) return;
@@ -392,7 +375,7 @@ function chain() {
 	}
 }
 
-function clear_chain() {
+function clearChain() {
 	for(var i=0;i<zen.timeouts.length;i++)
 		clearTimeout(zen.timeouts[i]);
 }
@@ -400,7 +383,7 @@ function clear_chain() {
 // Preload images sequentially (trickle), rather than all at once (torrent).
 // This is actually slower on faster computers, but it's guaranteed to work
 // on slower computers.
-function preload_trickle(names, id, callback) {
+function preload(names, id, callback) {
 	var name = names.shift();
 	if (!name) {
 		callback();
