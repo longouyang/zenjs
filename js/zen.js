@@ -242,6 +242,13 @@ Array.prototype.shuffle = function(){
 	return o;
 }
 
+// Flip an n-sided coin. Returns numbers in 0..n-1
+// By default, n=2
+function coinFlip(n) {
+	if (!n)
+	return Math.floor(Math.random()*(n+1));
+}
+
 // range from m to n
 function range(m,n) {
 	a = [];
