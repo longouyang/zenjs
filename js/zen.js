@@ -381,6 +381,8 @@ function clearChain() {
 // Preload images sequentially (trickle), rather than all at once (torrent).
 // This is actually slower on faster computers, but it's guaranteed to work
 // on slower computers.
+
+// TODO: concurrency
 function preload(names, id, callback) {
 	var name = names.shift();
 	if (!name) {
@@ -395,3 +397,4 @@ function preload(names, id, callback) {
 	image.src = name;
 }
 
+// TODO: embed Crockford's JSON?
