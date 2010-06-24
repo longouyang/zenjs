@@ -316,6 +316,13 @@ function isNaturalNumber(x) {
 	return (typeof x === 'number') && (x % 1 == 0) && (x > 0);
 }
 
+// Convert degrees to centimeters
+// Assumes a default viewing distance of 2 feet
+function degreesToCentimeters(degrees, viewingDistance) {
+	viewingDistance = viewingDistance || 60.69; // 2 feet;
+	return 2 * viewingDistance * Math.tan(degrees * Math.PI / 360);
+}
+
 // Getting user input
 
 function get_keyboard_input(accepted_responses, state, callback, duration) {
