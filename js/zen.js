@@ -245,7 +245,7 @@ Array.prototype.shuffle = function(){
 // Flip an n-sided coin. Returns numbers in 0..n-1
 // By default, n=2
 function coinFlip(n) {
-	if (!n)
+	n = n || 2;
 	return Math.floor(Math.random()*(n+1));
 }
 
@@ -325,7 +325,7 @@ function degreesToCentimeters(degrees, viewingDistance) {
 
 // Getting user input
 
-function get_keyboard_input(accepted_responses, state, callback, duration) {
+function getKeyboardInput(accepted_responses, state, callback, duration) {
 	var start_time = (new Date()).getTime();
 	var end_time;
 	
@@ -345,22 +345,27 @@ function get_keyboard_input(accepted_responses, state, callback, duration) {
 }
 
 // TODO: encapsulate in zen.keys
-var enter = 13;
-var escape = 27;
-var space = 32;
-var left = 37;
-var up = 38;
-var right = 39;
-var down = 40;
 
-function keyValue(key_code) {
-	if ([enter, escape, space, left, up, right, down].contains(key_code)) return key_code;
+var keyCodes = {
+	enter: 13,
+	escape: 27,
+	space: 32,
+	left: 37,
+	up: 38,
+	right: 39,
+	down: 40
+};
+
+function keyValue(e) {
+	var code = (window.event) ? event.keyCode : e.keyCode;
+	
+	if ([enter, escape, space, left, up, right, down].contains(code)) return code;
 	// numbers
-	if (key_code > 47 && key_code < 58 ) return key_code - 48;
+	if (code > 47 && code < 58 ) return code - 48;
 	// numpad
-	if (key_code > 95 && key_code < 106) return key_code - 96;
+	if (code > 95 && code < 106) return code - 96;
 	// characters - doing "abcdef..."[] doesn't work in IE
-	if (key_code > 64 && key_code < 91) return ("abcdefghijklmnopqrstuvwxyz".split(""))[key_code-65];
+	if (code > 64 && code < 91) return ("abcdefghijklmnopqrstuvwxyz".split(""))[code-65];
 	return 0;
 }
 
