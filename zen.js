@@ -238,7 +238,7 @@ Array.prototype.pluck = function(key) {
 // Uses the Fisher-Yates algorithm.
 // Source - http://snippets.dzone.com/posts/show/849
 Array.prototype.shuffle = function(){
-	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x) {}
 	return o;
 }
 
