@@ -359,7 +359,10 @@ var keyCodes = {
 function keyValue(e) {
 	var code = (window.event) ? event.keyCode : e.keyCode;
 	
-	if ([enter, escape, space, left, up, right, down].contains(code)) return code;
+	if ([keyCodes.enter, keyCodes.escape, keyCodes.space, keyCodes.left,
+		 keyCodes.up, keyCodes.right, keyCodes.down].contains(code))
+		return code;
+
 	// numbers
 	if (code > 47 && code < 58 ) return code - 48;
 	// numpad
