@@ -9,8 +9,6 @@ utility functions
 presentation functions
 
 TODO:
-camelCase
-unit testing
 documentation system
 jslint
 restyle MDC code
@@ -256,6 +254,18 @@ function range(m,n) {
 		a.push(i);
 	}
 	return a;
+}
+
+// return the cartesian product of arrays A and B
+function cartesianProduct(a,b) {
+	var c = [];
+	var a_len=a.length,b_len=b.length;
+	for(var i=0;i<a_len;i++) {
+		for(var j=0;j<b_len;j++) {
+			c.push([a[i],b[j]]);
+		}
+	}
+	return c;
 }
 
 // DOM element lookup with caching
