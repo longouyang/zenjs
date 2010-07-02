@@ -424,7 +424,7 @@ function preload(names, id, callback) {
 	var image = new Image();
 	image.onload = function() { 
 		$$$(id).innerHTML = parseInt($$$(id).innerHTML) + 1;
-		setTimeout(function() {preload_trickle(names,id,callback) }, 0);
+		setTimeout(function() {preload(names,id,callback) }, 0);
 	};
 	image.src = name;
 }
