@@ -11,7 +11,6 @@ presentation functions
 TODO:
 documentation system
 jslint
-restyle MDC code
 */
 
 var zen = {};
@@ -35,6 +34,31 @@ document.getElementsByClassName = document.getElementsByClassName || function (s
         return classElements;
 }
 
+// Recursively checks for array equality
+// TODO: can we write similar methods for hashes?
+Array.prototype.equals = function(that) {
+	if (!(that instanceof Array)) {
+		throw new TypeError();
+	}
+	
+	if (this.length != that.length)
+		return false;
+		
+	for(var i=0,len=this.length;i<len;i++) {
+		if (this[i] instanceof Array) {
+			if (!(that[i] instanceof Array)) 
+				return false;
+				
+			if (!(this[i].equals(that[i])))
+				return false;
+		} else {
+			if (!(this[i] === that[i])) return false;
+		}
+	}
+	
+	return true;
+}
+
 // Define indexOf for browsers that don't implement it correctly (IE6, 7)
 if(!Array.prototype.indexOf) {
 	Array.prototype.indexOf = function(obj){
@@ -49,12 +73,10 @@ if(!Array.prototype.indexOf) {
 
 // Define the map pattern if the browser's Javascript implementation doesn't
 // have it.
-if (!Array.prototype.map)
-{
+if (!Array.prototype.map) {
   Array.prototype.map = function(fun /*, thisp*/) {
     var len = this.length >>> 0;
-    if (typeof fun != "function")
-      throw new TypeError();
+    if (typeof fun != "function") { throw new TypeError(); }
 
     var res = new Array(len);
     var thisp = arguments[1];
@@ -70,42 +92,30 @@ if (!Array.prototype.map)
 // Define the reduce pattern if the browser's Javascript implementation
 // doesn't have it.
 if (!Array.prototype.reduce) {
-  Array.prototype.reduce = function(fun /*, initial*/)
-  {
+  Array.prototype.reduce = function(fun /*, initial*/) {
     var len = this.length >>> 0;
-    if (typeof fun != "function")
-      throw new TypeError();
+    if (typeof fun != "function") { throw new TypeError(); }
 
     // no value to return if no initial value and an empty array
-    if (len == 0 && arguments.length == 1)
-      throw new TypeError();
+    if (len == 0 && arguments.length == 1) { throw new TypeError(); }
 
     var i = 0;
-    if (arguments.length >= 2)
-    {
+    if (arguments.length >= 2) {
       var rv = arguments[1];
-    }
-    else
-    {
-      do
-      {
-        if (i in this)
-        {
+    } else {
+      do {
+        if (i in this) {
           rv = this[i++];
           break;
         }
 
         // if array contains no values, no initial value to return
-        if (++i >= len)
-          throw new TypeError();
-      }
-      while (true);
+        if (++i >= len) { throw new TypeError(); }
+      } while (true);
     }
 
-    for (; i < len; i++)
-    {
-      if (i in this)
-        rv = fun.call(null, rv, this[i], i, this);
+    for (; i < len; i++) {
+      if (i in this) { rv = fun.call(null, rv, this[i], i, this); }
     }
 
     return rv;
@@ -114,18 +124,14 @@ if (!Array.prototype.reduce) {
 
 // Define the filter pattern
 if (!Array.prototype.filter) {
-  Array.prototype.filter = function(fun /*, thisp*/)
-  {
+  Array.prototype.filter = function(fun /*, thisp*/) {
     var len = this.length >>> 0;
-    if (typeof fun != "function")
-      throw new TypeError();
+    if (typeof fun != "function") { throw new TypeError(); }
 
     var res = [];
     var thisp = arguments[1];
-    for (var i = 0; i < len; i++)
-    {
-      if (i in this)
-      {
+    for (var i = 0; i < len; i++) {
+      if (i in this) {
         var val = this[i]; // in case fun mutates this
         if (fun.call(thisp, val, i, this))
           res.push(val);
@@ -136,54 +142,6 @@ if (!Array.prototype.filter) {
   };
 }
 
-// Deploy homebrew JSON implementation only if the browser doesn't implement
-// Object.prototype.hasOwnProperty (Safari 2). Otherwise, we should use
-// Crockford's JSON implementation.
-
-var JSON;
-
-if (!Object.prototype.hasOwnProperty)
-{
-
-JSON = {};
-
-// implement JSON.stringify serialization
-JSON.stringify = function (obj) {
-
-	var t = typeof (obj);
-	if (t != "object" || obj === null) {
-
-		// simple data type
-		if (t == "string") obj = '"'+obj+'"';
-		return (t == "function") ? "" : String(obj);
-
-	}
-	else {
-
-		// recurse array or object
-		var n, v, json = [], arr = (obj && obj.constructor == Array);
-
-		for (n in obj) {
-			//document.write(n);
-			v = obj[n]; t = typeof(v);
-
-			if (t == "string") v = '"'+v+'"';
-			else if (t == "object" && v !== null) v = JSON.stringify(v);
-
-			if (t != "function") json.push((arr ? "" : '"' + n + '":') + String(v));
-		}
-
-		return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
-	}
-};
-
-// implement JSON.parse de-serialization
-JSON.parse = function (str) {
-	if (str === "") str = '""';
-	eval("var p=" + str + ";");
-	return p;
-};
-}
 
 /* Utility functions */
 
@@ -205,7 +163,7 @@ Array.prototype.unique = function () {
 	var r=this.concat(), n = this.length;
 	for(var i=0;i<n;i++) {
 		for(var j=i+1;j<n;j++) {
-			if (r[i]==r[j]) {
+			if (r[i]===r[j]) {
 				r.splice(j--,1);
 				n--;
 			}
@@ -292,18 +250,6 @@ function showSlide(id) {
 	}
 }
 
-// Checking data
-function AssertException(message) { this.message = message; }
-AssertException.prototype.toString = function () {
-  return 'AssertException: ' + this.message;
-}
-
-function assert(exp, message) {
-  if (!exp) {
-	alert('Error: ' + message + '. Please let the experimenter know about this error.');
-    throw new AssertException(message);
-  }
-}
 
 function isArray(obj) {
 	return obj.constructor == Array;
@@ -334,6 +280,7 @@ function degreesToCentimeters(degrees, viewingDistance) {
 
 // Getting user input
 
+// TODO: is this performant enough?
 function getKeyboardInput(accepted_responses, state, callback, duration) {
 	var start_time = (new Date()).getTime();
 	var end_time;

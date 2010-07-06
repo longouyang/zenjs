@@ -8,6 +8,8 @@
 <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/logger/assets/logger.css">
 <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/yuitest/assets/testlogger.css">
 
+<script src="js/zen.js"></script>
+
 <!-- Dependencies --> 
 <script src="http://yui.yahooapis.com/2.8.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
 <script src="http://yui.yahooapis.com/2.8.1/build/logger/logger-min.js"></script>
@@ -16,18 +18,85 @@
 <script src="http://yui.yahooapis.com/2.8.1/build/yuitest/yuitest-min.js"></script>
 
 <script type="text/javascript">
-var testSuite = new YAHOO.tool.TestSuite("suite");
-testSuite.add(new YAHOO.tool.TestCase({
-testTrue: function() { YAHOO.util.Assert.areEqual(3,3,"this should never fail")}
-}));
+var Assert = YAHOO.util.Assert;
 
-YAHOO.tool.TestRunner.add(testSuite);
+var suite = new YAHOO.tool.TestSuite("suite");
+suite.add(new YAHOO.tool.TestCase({
+	name: "Array functions",
+	testEquality: function() {
+		Assert.isTrue([0,1,2,3,4].equals([0,1,2,3,4]),"shit");
+		Assert.isTrue(
+			[1,2,3].equals([1,2,3]), "[1,2,3] should equal [1,2,3]"
+		);
+		Assert.isFalse(
+			[null].equals([false]), "[null] should not equal [false]"
+		);
+		Assert.isFalse(
+			[0].equals([false]),"[0] should not equal [false]"
+		);
+		Assert.isFalse(
+			[3].equals(['3']),"[3] should not equal ['3']"
+		);
+		Assert.isTrue(
+			['a','b',[true,false,0]].equals(['a','b',[true,false,0]])
+		);
+		Assert.isFalse(
+			['a','b',[true,0,0]].equals(['a','b',[true,false,0]])
+		);
+		Assert.isFalse(
+			[[]].equals([])
+		);
+		Assert.isTrue(
+			[[[]]].equals([[[]]])
+		)
+	},
+	testUnique: function() {
+		Assert.isTrue(
+			[3,3,3,3,3,3,3].unique().equals([3]),
+			"unique() should remove all threes"
+		);
+		Assert.isTrue(
+			['3',3].unique().equals(['3',3]),
+			"['3',3] should have two unique elements"
+		)
+		Assert.isTrue(
+			[].unique().equals([]),
+			"[] is unique"
+		)
+	},
+	testMap: function() {
+		Assert.isTrue(
+			[1,2,3,4,5].map(function(n) { return n*n}).equals(
+				[1,4,9,16,25]
+			),
+			"mapping n^2 function onto [1,2,3,4,5] should return [1,4,9,16,25])"
+		);
+		Assert.isTrue(
+			['a','b','c','d','e'].map(function(n,i) {return i }).equals(
+				[0,1,2,3,4]
+			),
+			"mapping index function onto ['a','b','c','d','e'] should return"+
+			"[0,1,2,3,4]"
+		);
+		Assert.isTrue(
+			[0,'x'].map(function(n,i,a) { return a }).equals(
+				[[0,'x'],[0,'x']]
+			)
+		)
+	}
+}
+));
 
-var x = YAHOO.tool.TestRunner.run();
+/* TODO:
+cartesianProduct
+randomness test
+*/
+
+YAHOO.tool.TestRunner.add(suite);
+YAHOO.tool.TestRunner.run();
 
 YAHOO.util.Event.onDOMReady(function() {
 	var logger = new YAHOO.tool.TestLogger(); 
-	console.log(x);
 	
 	// DECIDE: parse TestRunner.COMPLETE_EVENT to have nicer test info display?
 });
