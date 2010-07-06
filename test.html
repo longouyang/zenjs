@@ -83,6 +83,20 @@ suite.add(new YAHOO.tool.TestCase({
 				[[0,'x'],[0,'x']]
 			)
 		)
+	},
+	testSum: function() {
+		Assert.areEqual(
+			[0,0,0,0,0,0,0].sum(), 0,
+			"sum of [0,0,0...] should be 0"
+		);
+		Assert.areEqual(
+			[1,2,3,4,5].sum(), 15, 
+			"sum of [1,2,3,4,5] should be 15"
+		);
+		Assert.areEqual(
+			[-1,0,1,0,1].sum(), 1,
+			"sum of [-1,0,1,0,1] should be 1"
+		)
 	}
 }
 ));

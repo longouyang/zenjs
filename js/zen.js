@@ -142,8 +142,23 @@ if (!Array.prototype.filter) {
   };
 }
 
+Array.prototype.invoke = function(fun) {
+	var len = this.length >>> 0;
+	if (typeof fun != "function") { throw new TypeError(); }
+	
+	var thisp = arguments[1];
+	var res = [];
+	for(var i=0; i < len; i++) {
+		if (i in this) {
+			res.push(fun.call(thisp,this[i]));
+		}
+	}
+	return res;
+}
 
 /* Utility functions */
+
+// TODO: max, min, zip, partition
 
 Array.prototype.sum = function() {
 	var i = this.length;
