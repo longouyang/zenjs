@@ -158,8 +158,6 @@ Array.prototype.invoke = function(fun) {
 
 /* Utility functions */
 
-// TODO: max, min, zip, partition
-
 Array.prototype.sum = function() {
 	var i = this.length;
 	var s=0;
@@ -170,7 +168,7 @@ Array.prototype.sum = function() {
 }
 
 Array.prototype.average = function() {
-	if (!this.length) return 0;
+	if (!this.length) return null;
 	return this.sum()/this.length;
 }
 
@@ -216,7 +214,7 @@ Array.prototype.shuffle = function(){
 // By default, n=2
 function coinFlip(n) {
 	n = n || 2;
-	return Math.floor(Math.random()*(n+1));
+	return Math.floor(Math.random()*n);
 }
 
 // range from m to n
