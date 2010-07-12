@@ -66,16 +66,17 @@ Object.prototype.equals = function(that) {
 	}
 	if (this instanceof Object) {
 		for(var i in this) {
-			if (this.hasOwnProperty(i)) {
-				if (this[i] instanceof Object) {
-					if (!(that[i] instanceof Object)) 
-						return false;
+			if (!this.hasOwnProperty(i)) {
+				continue;
+			}
+			if (this[i] instanceof Object) {
+				if (!(that[i] instanceof Object)) 
+					return false;
 
-					if (!(this[i].equals(that[i])))
-						return false;
-				} else {
-					if (!(this[i] === that[i])) return false;
-				}
+				if (!(this[i].equals(that[i])))
+					return false;
+			} else {
+				if (!(this[i] === that[i])) return false;
 			}
 		}
 	}
