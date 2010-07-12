@@ -48,6 +48,45 @@ suite.add(new YAHOO.tool.TestCase({
 		);
 		Assert.isTrue(
 			[[[]]].equals([[[]]])
+		);
+		Assert.isTrue(
+			({
+				a: [4,5,6,7,-1,"","x"],
+				b: {x:{c:1}},
+				c: 3
+			}).equals(
+				{
+					a: [4,5,6,7,-1,"","x"],
+					b: {x:{c:1}},
+					c: 3
+				}
+			)
+		);
+		Assert.isFalse(
+			({
+				a: [4,5,6,7,-1,"","x"],
+				b: {x:{c:1}},
+				c: 3
+			}).equals(
+				{
+					a: [4,5,6,7,-1,"","x"],
+					b: {x:{c:"1"}},
+					c: 3
+				}
+			)
+		);
+		Assert.isFalse(
+			({
+				a: [4,5,6,7,-1,"","y"],
+				b: {x:{c:1}},
+				c: 3
+			}).equals(
+				{
+					a: [4,5,6,7,-1,"","x"],
+					b: {x:{c:1}},
+					c: 3
+				}
+			)
 		)
 	},
 	testUnique: function() {
@@ -97,6 +136,56 @@ suite.add(new YAHOO.tool.TestCase({
 			[-1,0,1,0,1].sum(), 1,
 			"sum of [-1,0,1,0,1] should be 1"
 		)
+	},
+	testRange: function() {
+		Assert.isTrue(
+			[1,2,3,4,5].equals(range(1,5))
+		);
+		Assert.isTrue(
+			range("a",null).equals([])
+		);
+		Assert.isTrue(
+			range(1,-1).equals([])
+		);
+	},
+	testAverage: function() {
+		Assert.areEqual(
+			range(1,10).average(), 5.5
+		);
+		Assert.areEqual(
+			[-5].average(), -5
+		);
+		Assert.isNull([].average());
+	},
+	testPluck: function() {
+		Assert.isTrue(
+				[{
+					key1: -1,
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: 0,
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: 99,
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: "a",
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: ["b"],
+					key2: 65,
+					key3: "b"
+				}].pluck("key1").equals(
+					[-1,0,99,"a",["b"]]
+				));
 	}
 }
 ));
