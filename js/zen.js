@@ -34,25 +34,49 @@ document.getElementsByClassName = document.getElementsByClassName || function (s
         return classElements;
 }
 
+if (!Object.prototype.hasOwnProperty) {
+	Object.prototype.hasOwnProperty = function(p) {
+		return this.constructor.prototype[p] === undefined;
+	}
+}
+
 // Recursively checks for array equality
 // TODO: can we write similar methods for hashes?
-Array.prototype.equals = function(that) {
-	if (!(that instanceof Array)) {
+Object.prototype.equals = function(that) {
+	if (!(that instanceof Object)) {
 		throw new TypeError();
 	}
 	
 	if (this.length != that.length)
 		return false;
-		
-	for(var i=0,len=this.length;i<len;i++) {
-		if (this[i] instanceof Array) {
-			if (!(that[i] instanceof Array)) 
-				return false;
-				
-			if (!(this[i].equals(that[i])))
-				return false;
-		} else {
-			if (!(this[i] === that[i])) return false;
+	
+	if (this instanceof Array) {
+		var i = this.length;
+		while(i--) {
+			if (this[i] instanceof Object) {
+				if (!(that[i] instanceof Object)) 
+					return false;
+
+				if (!(this[i].equals(that[i])))
+					return false;
+			} else {
+				if (!(this[i] === that[i])) return false;
+			}
+		}
+	}
+	if (this instanceof Object) {
+		for(var i in this) {
+			if (this.hasOwnProperty(i)) {
+				if (this[i] instanceof Object) {
+					if (!(that[i] instanceof Object)) 
+						return false;
+
+					if (!(this[i].equals(that[i])))
+						return false;
+				} else {
+					if (!(this[i] === that[i])) return false;
+				}
+			}
 		}
 	}
 	
