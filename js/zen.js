@@ -88,7 +88,7 @@ Object.prototype.equals = function(that) {
 if(!Array.prototype.indexOf) {
 	Array.prototype.indexOf = function(obj){
 		for(var i=0; i<this.length; i++){
-			if(this[i]==obj){
+			if(this[i]===obj){
 				return i;
 			}
 		}
@@ -288,18 +288,6 @@ function showSlide(id) {
 	}
 }
 
-
-function isArray(obj) {
-	return obj.constructor == Array;
-}
-
-function isArrayOf(cl,obj) {
-	if (obj.constructor != Array) return false;
-	for(i in obj) {
-		if (obj[i].constructor != cl) return false;
-	}
-	return true;
-}
 
 function isPositiveNumber(x) {
 	return (typeof x ==='number') && (x > 0);
