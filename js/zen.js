@@ -288,13 +288,12 @@ function showSlide(id) {
 	}
 }
 
-
-function isPositiveNumber(x) {
-	return (typeof x ==='number') && (x > 0);
+Number.prototype.isPositive = function() {
+	return (this > 0);
 }
 
-function isNaturalNumber(x) {
-	return (typeof x === 'number') && (x % 1 == 0) && (x > 0);
+Number.prototype.isNatural = function() {
+	return (x % 1 == 0) && (x > 0);
 }
 
 // Convert degrees to centimeters
