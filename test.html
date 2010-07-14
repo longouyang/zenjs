@@ -186,9 +186,79 @@ suite.add(new YAHOO.tool.TestCase({
 				}].pluck("key1").equals(
 					[-1,0,99,"a",["b"]]
 				));
+	},
+	testInvoke: function() {
+		var f = function(n) { return n*n };
+		Assert.isTrue([3,4,5].invoke(f).equals([9,16,25]));
+		Assert.isTrue([].invoke(f).equals([]));
+	},
+	testIndexOf: function() {
+		Assert.areEqual([1,2,3,4,5,6].indexOf(3), 2);
+		Assert.areEqual([1,2,3,4,5,6].indexOf("1"), -1);
+		Assert.areEqual([].indexOf(5), -1);
+	},
+	testContains: function() {
+		Assert.isFalse([].contains(null));
+		Assert.isTrue([1].contains(1));
+		Assert.isFalse([1].contains("1"));
+	},
+	testReduce: function() {
+		Assert.areEqual(
+			[1,2,3,4,5,7,8,9].reduce(
+				function(cumulative, current) {
+					return cumulative + current;
+				},
+				0
+			), 39
+		);
+		Assert.areEqual(
+			[0,2,3,4,5,7,8,9].reduce(
+				function(cumulative, current) {
+					return cumulative * current;
+				},
+				0
+			), 0
+		);
+	},
+	testFilter: function() {
+		Assert.isTrue(
+			[1,2,3,4,5,6,7,8,9,10].filter(
+				function(n) {return n>6; }
+			).equals([7,8,9,10])
+		);
+		Assert.isTrue(
+			[9,9,9,9,9,9].filter(
+				function(n) { return false}
+			).equals([])
+		);
+		Assert.isTrue(
+			[9,9,9,9,9,9].filter(
+				function(n) { return true}
+			).equals([9,9,9,9,9,9])
+		);
 	}
 }
 ));
+
+suite.add(new YAHOO.tool.TestCase({
+	name: "Math functions",
+	testIsPositive: function() {
+		Assert.isFalse((-3).isPositive());
+		Assert.isTrue((3).isPositive());
+		Assert.isFalse((0).isPositive());
+	},
+	testIsNatural: function() {
+		Assert.isFalse((Math.PI).isNatural(), "Pi is not a natural number");
+		Assert.isFalse((0).isNatural(), "0 is not a natural number");
+		Assert.isFalse((-1).isNatural(), "-1 is not a natural number");
+		Assert.isFalse((0.00000001).isNatural(), "10^-8 is not a natural number");
+		Assert.isTrue((999).isNatural(), "999 is a natural number");
+	},
+	testIsInteger: function() {
+		Assert.isFalse((3.999999).isInteger(), "3.999999 is not an integer");
+		Assert.isTrue((4).isInteger(), "4 is an integer");
+	}
+}));
 
 /* TODO:
 cartesianProduct
