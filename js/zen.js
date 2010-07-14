@@ -296,6 +296,10 @@ Number.prototype.isNatural = function() {
 	return (this % 1 == 0) && (this > 0);
 }
 
+Number.prototype.isInteger = function() {
+	return (this % 1 == 0);
+}
+
 // Convert degrees to centimeters
 // Assumes a default viewing distance of 2 feet
 function degreesToCentimeters(degrees, viewingDistance) {
