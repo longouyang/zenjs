@@ -293,7 +293,7 @@ Number.prototype.isPositive = function() {
 }
 
 Number.prototype.isNatural = function() {
-	return (x % 1 == 0) && (x > 0);
+	return (this % 1 == 0) && (this > 0);
 }
 
 // Convert degrees to centimeters
