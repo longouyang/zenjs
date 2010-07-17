@@ -251,12 +251,26 @@ suite.add(new YAHOO.tool.TestCase({
 		Assert.isFalse((Math.PI).isNatural(), "Pi is not a natural number");
 		Assert.isFalse((0).isNatural(), "0 is not a natural number");
 		Assert.isFalse((-1).isNatural(), "-1 is not a natural number");
-		Assert.isFalse((0.00000001).isNatural(), "10^-8 is not a natural number");
+		Assert.isFalse((0.000001).isNatural(), "10^-6 is not a natural number");
 		Assert.isTrue((999).isNatural(), "999 is a natural number");
 	},
 	testIsInteger: function() {
 		Assert.isFalse((3.999999).isInteger(), "3.999999 is not an integer");
 		Assert.isTrue((4).isInteger(), "4 is an integer");
+	},
+	testRound: function() {
+		Assert.areEqual(Math.PI.round(), 3);
+		Assert.areEqual(Math.PI.round(1), 3.1);
+		Assert.areEqual(Math.PI.round(2), 3.14);
+		Assert.areEqual(Math.PI.round(15), 3.141592653589793);
+	},
+	testRoundNegative: function() {
+		Math.PI.round(-1);
+	},
+	_should: {
+		error: {
+			testRoundNegative: true
+		}
 	}
 }));
 

@@ -300,6 +300,15 @@ Number.prototype.isInteger = function() {
 	return (this % 1 == 0);
 }
 
+Number.prototype.round = function(places) {
+	if (typeof places === "undefined") { places = 0; }
+	if (!(typeof places === "number") || !((places+1).isNatural())) {
+		throw new TypeError();
+	}
+	var m = Math.pow(10, places)
+	return Math.round(this * m) / m;
+}
+
 // Convert degrees to centimeters
 // Assumes a default viewing distance of 2 feet
 function degreesToCentimeters(degrees, viewingDistance) {
@@ -403,8 +412,6 @@ function preload(names, id, callback) {
 	};
 	image.src = name;
 }
-
-// TODO: embed Crockford's JSON?
 
 
 // Cookie functions. Taken from PPK
