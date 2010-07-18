@@ -316,6 +316,13 @@ function degreesToCentimeters(degrees, viewingDistance) {
 	return 2 * viewingDistance * Math.tan(degrees * Math.PI / 360);
 }
 
+// Convert centimeters to degrees
+// Assumes a default viewing distance of 2 feet
+function centimetersToDegrees(centimeters, viewingDistance) {
+	viewingDistance = viewingDistance || 60.69;
+	return 2 * Math.atan2(centimeters, 2* viewingDistance) * 180 / Math.PI;
+}
+
 // Getting user input
 
 // TODO: is this performant enough?
