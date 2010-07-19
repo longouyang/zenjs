@@ -13,8 +13,6 @@ documentation system
 jslint
 */
 
-var zen = {};
-
 /* Browser compatibility fixes */
 
 // document.getElementsByClassName fix for IE6
@@ -446,3 +444,12 @@ function readCookie(name) {
 function eraseCookie(name) {
 	createCookie(name,"",-1);
 }
+
+var zen = {
+	params: url.split("&").reduce(
+		function(cumulative,current) {
+			cumulative[current.split("=")[0]] = current.split("=")[1];
+			return cumulative;
+		}
+	,{})
+};
