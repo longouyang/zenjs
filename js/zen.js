@@ -262,12 +262,13 @@ function cartesianProduct(a,b) {
 }
 
 var zen = {
-	params: location.href.split("&").reduce(
-		function(cumulative,current) {
-			cumulative[current.split("=")[0]] = current.split("=")[1];
-			return cumulative;
-		}
-	,{})
+	params: (location.href.split("?")[1]) ? 
+		(location.href.split("?")[1]).split("&").reduce(
+			function(cumulative,current) {
+				cumulative[current.split("=")[0]] = current.split("=")[1];
+				return cumulative;
+			}
+		,{}) : {}
 };
 
 // DOM element lookup with caching
