@@ -261,6 +261,15 @@ function cartesianProduct(a,b) {
 	return c;
 }
 
+var zen = {
+	params: location.href.split("&").reduce(
+		function(cumulative,current) {
+			cumulative[current.split("=")[0]] = current.split("=")[1];
+			return cumulative;
+		}
+	,{})
+};
+
 // DOM element lookup with caching
 zen.elements = {};
 function $$$(id) { 
@@ -445,11 +454,3 @@ function eraseCookie(name) {
 	createCookie(name,"",-1);
 }
 
-var zen = {
-	params: url.split("&").reduce(
-		function(cumulative,current) {
-			cumulative[current.split("=")[0]] = current.split("=")[1];
-			return cumulative;
-		}
-	,{})
-};
