@@ -227,6 +227,22 @@ Array.prototype.pluck = function(key) {
 	return a;
 }
 
+Array.prototype.partition = function(f) {
+	if (!(typeof f == "function")) {
+		throw new TypeError();
+	}
+	var haves = [], haveNots = [];
+	for(var i=0,len=this.length;i<len;i++) {
+		val = this[i];
+		if (f(val)) {
+			haves.push(val);
+		} else {
+			haveNots.push(val);
+		}
+	}
+	return [haves, haveNots];
+}
+
 // Uses the Fisher-Yates algorithm.
 // Source - http://snippets.dzone.com/posts/show/849
 Array.prototype.shuffle = function(){
@@ -455,3 +471,16 @@ function eraseCookie(name) {
 	createCookie(name,"",-1);
 }
 
+
+if (typeof XMLHttpRequest == "undefined") {
+	XMLHttpRequest = function () {
+	try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
+		catch (e) {}
+	try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); }
+		catch (e) {}
+	try { return new ActiveXObject("Msxml2.XMLHTTP"); }
+		catch (e) {}
+	//Microsoft.XMLHTTP points to Msxml2.XMLHTTP.3.0 and is redundant
+	throw new Error("This browser does not support XMLHttpRequest.");
+	};
+}
