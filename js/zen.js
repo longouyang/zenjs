@@ -349,44 +349,35 @@ function centimetersToDegrees(centimeters, viewingDistance) {
 
 // Getting user input
 
-// TODO: is this performant enough?
-function getKeyboardInput(accepted_responses, state, callback, duration) {
-	var start_time = (new Date()).getTime();
-	var end_time;
+function getKeyboardInput(acceptedKeys, state, callback, duration) {
+	if (duration) setTimeout("document.onkeydown = null;", duration);
+	var startTime = new Date();
 	
 	// monitor for keypresses
 	document.onkeydown = function(e) {
-		end_time = (new Date()).getTime();
-		var value = response_value(window.event ? event.keyCode : e.keyCode);
-		// ignore keys pressed not in accepted_responses
+		var endTime = new Date();
+		var value = keyValue(window.event ? event.keyCode : e.keyCode);
+		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
-		if (accepted_responses.contains(value)) {
-			var user_input = {'response': value, 'rt': end_time - start_time};
-			callback(state, user_input);
+		if (acceptedKeys.contains(value)) {
+			var userInput = {'response': value, 'rt': endTime - startTime};
+			callback(state, userInput);
 		}
 	}
-	
-	if (duration) setTimeout("document.onkeydown = null;", duration);
 }
-
-// TODO: encapsulate in zen.keys
-
-var keyCodes = {
-	enter: 13,
-	escape: 27,
-	space: 32,
-	left: 37,
-	up: 38,
-	right: 39,
-	down: 40
-};
 
 function keyValue(e) {
 	var code = (window.event) ? event.keyCode : e.keyCode;
 	
-	if ([keyCodes.enter, keyCodes.escape, keyCodes.space, keyCodes.left,
-		 keyCodes.up, keyCodes.right, keyCodes.down].contains(code))
-		return code;
+	switch (code) {
+		case 13: return "enter";
+		case 27: return "escape";
+		case 32: return "space";
+		case 37: return "left";
+		case 38: return "up";
+		case 39: return "right";
+		case 40: return "down";
+	}
 
 	// numbers
 	if (code > 47 && code < 58 ) return code - 48;
