@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<title>zen.js test</title>
+<!--CSS-->
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/logger/assets/logger.css">
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/yuitest/assets/testlogger.css">
+
+<script src="js/zen.js"></script>
+
+<!-- Dependencies --> 
+<script src="http://yui.yahooapis.com/2.8.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script src="http://yui.yahooapis.com/2.8.1/build/logger/logger-min.js"></script>
+
+<!-- Source File -->
+<script src="http://yui.yahooapis.com/2.8.1/build/yuitest/yuitest-min.js"></script>
+
+<script type="text/javascript">
+var Assert = YAHOO.util.Assert;
+
+var suite = new YAHOO.tool.TestSuite("suite");
+suite.add(new YAHOO.tool.TestCase({
+	name: "Array functions",
+	testEquality: function() {
+		Assert.isTrue([0,1,2,3,4].equals([0,1,2,3,4]),"shit");
+		Assert.isTrue(
+			[1,2,3].equals([1,2,3]), "[1,2,3] should equal [1,2,3]"
+		);
+		Assert.isFalse(
+			[null].equals([false]), "[null] should not equal [false]"
+		);
+		Assert.isFalse(
+			[0].equals([false]),"[0] should not equal [false]"
+		);
+		Assert.isFalse(
+			[3].equals(['3']),"[3] should not equal ['3']"
+		);
+		Assert.isTrue(
+			['a','b',[true,false,0]].equals(['a','b',[true,false,0]])
+		);
+		Assert.isFalse(
+			['a','b',[true,0,0]].equals(['a','b',[true,false,0]])
+		);
+		Assert.isFalse(
+			[[]].equals([])
+		);
+		Assert.isTrue(
+			[[[]]].equals([[[]]])
+		);
+		Assert.isTrue(
+			({
+				a: [4,5,6,7,-1,"","x"],
+				b: {x:{c:1}},
+				c: 3
+			}).equals(
+				{
+					a: [4,5,6,7,-1,"","x"],
+					b: {x:{c:1}},
+					c: 3
+				}
+			)
+		);
+		Assert.isFalse(
+			({
+				a: [4,5,6,7,-1,"","x"],
+				b: {x:{c:1}},
+				c: 3
+			}).equals(
+				{
+					a: [4,5,6,7,-1,"","x"],
+					b: {x:{c:"1"}},
+					c: 3
+				}
+			)
+		);
+		Assert.isFalse(
+			({
+				a: [4,5,6,7,-1,"","y"],
+				b: {x:{c:1}},
+				c: 3
+			}).equals(
+				{
+					a: [4,5,6,7,-1,"","x"],
+					b: {x:{c:1}},
+					c: 3
+				}
+			)
+		)
+	},
+	testUnique: function() {
+		Assert.isTrue(
+			[3,3,3,3,3,3,3].unique().equals([3]),
+			"unique() should remove all threes"
+		);
+		Assert.isTrue(
+			['3',3].unique().equals(['3',3]),
+			"['3',3] should have two unique elements"
+		)
+		Assert.isTrue(
+			[].unique().equals([]),
+			"[] is unique"
+		)
+	},
+	testMap: function() {
+		Assert.isTrue(
+			[1,2,3,4,5].map(function(n) { return n*n}).equals(
+				[1,4,9,16,25]
+			),
+			"mapping n^2 function onto [1,2,3,4,5] should return [1,4,9,16,25])"
+		);
+		Assert.isTrue(
+			['a','b','c','d','e'].map(function(n,i) {return i }).equals(
+				[0,1,2,3,4]
+			),
+			"mapping index function onto ['a','b','c','d','e'] should return"+
+			"[0,1,2,3,4]"
+		);
+		Assert.isTrue(
+			[0,'x'].map(function(n,i,a) { return a }).equals(
+				[[0,'x'],[0,'x']]
+			)
+		)
+	},
+	testSum: function() {
+		Assert.areEqual(
+			[0,0,0,0,0,0,0].sum(), 0,
+			"sum of [0,0,0...] should be 0"
+		);
+		Assert.areEqual(
+			[1,2,3,4,5].sum(), 15, 
+			"sum of [1,2,3,4,5] should be 15"
+		);
+		Assert.areEqual(
+			[-1,0,1,0,1].sum(), 1,
+			"sum of [-1,0,1,0,1] should be 1"
+		)
+	},
+	testRange: function() {
+		Assert.isTrue(
+			[1,2,3,4,5].equals(range(1,5))
+		);
+		Assert.isTrue(
+			range("a",null).equals([])
+		);
+		Assert.isTrue(
+			range(1,-1).equals([])
+		);
+	},
+	testAverage: function() {
+		Assert.areEqual(
+			range(1,10).average(), 5.5
+		);
+		Assert.areEqual(
+			[-5].average(), -5
+		);
+		Assert.isNull([].average());
+	},
+	testPluck: function() {
+		Assert.isTrue(
+				[{
+					key1: -1,
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: 0,
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: 99,
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: "a",
+					key2: 65,
+					key3: "b"
+				},
+				{
+					key1: ["b"],
+					key2: 65,
+					key3: "b"
+				}].pluck("key1").equals(
+					[-1,0,99,"a",["b"]]
+				));
+	},
+	testInvoke: function() {
+		var f = function(n) { return n*n };
+		Assert.isTrue([3,4,5].invoke(f).equals([9,16,25]));
+		Assert.isTrue([].invoke(f).equals([]));
+	},
+	testIndexOf: function() {
+		Assert.areEqual([1,2,3,4,5,6].indexOf(3), 2);
+		Assert.areEqual([1,2,3,4,5,6].indexOf("1"), -1);
+		Assert.areEqual([].indexOf(5), -1);
+	},
+	testContains: function() {
+		Assert.isFalse([].contains(null));
+		Assert.isTrue([1].contains(1));
+		Assert.isFalse([1].contains("1"));
+	},
+	testReduce: function() {
+		Assert.areEqual(
+			[1,2,3,4,5,7,8,9].reduce(
+				function(cumulative, current) {
+					return cumulative + current;
+				},
+				0
+			), 39
+		);
+		Assert.areEqual(
+			[0,2,3,4,5,7,8,9].reduce(
+				function(cumulative, current) {
+					return cumulative * current;
+				},
+				0
+			), 0
+		);
+	},
+	testFilter: function() {
+		Assert.isTrue(
+			[1,2,3,4,5,6,7,8,9,10].filter(
+				function(n) {return n>6; }
+			).equals([7,8,9,10])
+		);
+		Assert.isTrue(
+			[9,9,9,9,9,9].filter(
+				function(n) { return false}
+			).equals([])
+		);
+		Assert.isTrue(
+			[9,9,9,9,9,9].filter(
+				function(n) { return true}
+			).equals([9,9,9,9,9,9])
+		);
+	}
+}
+));
+
+suite.add(new YAHOO.tool.TestCase({
+	name: "Math functions",
+	testIsPositive: function() {
+		Assert.isFalse((-3).isPositive());
+		Assert.isTrue((3).isPositive());
+		Assert.isFalse((0).isPositive());
+	},
+	testIsNatural: function() {
+		Assert.isFalse((Math.PI).isNatural(), "Pi is not a natural number");
+		Assert.isFalse((0).isNatural(), "0 is not a natural number");
+		Assert.isFalse((-1).isNatural(), "-1 is not a natural number");
+		Assert.isFalse((0.000001).isNatural(), "10^-6 is not a natural number");
+		Assert.isTrue((999).isNatural(), "999 is a natural number");
+	},
+	testIsInteger: function() {
+		Assert.isFalse((3.999999).isInteger(), "3.999999 is not an integer");
+		Assert.isTrue((4).isInteger(), "4 is an integer");
+	},
+	testRound: function() {
+		Assert.areEqual(Math.PI.round(), 3);
+		Assert.areEqual(Math.PI.round(1), 3.1);
+		Assert.areEqual(Math.PI.round(2), 3.14);
+		Assert.areEqual(Math.PI.round(15), 3.141592653589793);
+	},
+	testRoundNegative: function() {
+		Math.PI.round(-1);
+	},
+	_should: {
+		error: {
+			testRoundNegative: true
+		}
+	}
+}));
+
+/* TODO:
+cartesianProduct
+randomness test
+*/
+
+YAHOO.tool.TestRunner.add(suite);
+YAHOO.tool.TestRunner.run();
+
+YAHOO.util.Event.onDOMReady(function() {
+	var logger = new YAHOO.tool.TestLogger(); 
+	
+	// DECIDE: parse TestRunner.COMPLETE_EVENT to have nicer test info display?
+});
+</script>
+
+</head>
+<body>
+</body>
+</html>

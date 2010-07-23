@@ -247,6 +247,7 @@ Array.prototype.partition = function(f) {
 // Source - http://snippets.dzone.com/posts/show/849
 Array.prototype.shuffle = function(){
 	for(var j, x, i = this.length; i; j = parseInt(Math.random() * i), x = this[--i], this[i] = this[j], this[j] = x) {}
+	return this;
 }
 
 // Flip an n-sided coin. Returns numbers in 0..n-1
