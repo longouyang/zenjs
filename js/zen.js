@@ -38,49 +38,6 @@ if (!Object.prototype.hasOwnProperty) {
 	}
 }
 
-// Recursively checks for array equality
-// TODO: can we write similar methods for hashes?
-Object.prototype.equals = function(that) {
-	if (!(that instanceof Object)) {
-		throw new TypeError();
-	}
-	
-	if (this.length != that.length)
-		return false;
-	
-	if (this instanceof Array) {
-		var i = this.length;
-		while(i--) {
-			if (this[i] instanceof Object) {
-				if (!(that[i] instanceof Object)) 
-					return false;
-
-				if (!(this[i].equals(that[i])))
-					return false;
-			} else {
-				if (!(this[i] === that[i])) return false;
-			}
-		}
-	}
-	if (this instanceof Object) {
-		for(var i in this) {
-			if (!this.hasOwnProperty(i)) {
-				continue;
-			}
-			if (this[i] instanceof Object) {
-				if (!(that[i] instanceof Object)) 
-					return false;
-
-				if (!(this[i].equals(that[i])))
-					return false;
-			} else {
-				if (!(this[i] === that[i])) return false;
-			}
-		}
-	}
-	
-	return true;
-}
 
 // Define indexOf for browsers that don't implement it correctly (IE6, 7)
 if(!Array.prototype.indexOf) {

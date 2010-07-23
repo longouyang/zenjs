@@ -18,13 +18,55 @@
 <script src="http://yui.yahooapis.com/2.8.1/build/yuitest/yuitest-min.js"></script>
 
 <script type="text/javascript">
+
+Object.prototype.equals = function(that) {
+	if (!(that.constructor == this.constructor)) {
+		throw new TypeError();
+	}
+	
+	if (this.length != that.length)
+		return false;
+	
+	if (this instanceof Array) {
+		var i = this.length;
+		while(i--) {
+			if (this[i] instanceof Object) {
+				if (!(that[i] instanceof Object)) 
+					return false;
+
+				if (!(this[i].equals(that[i])))
+					return false;
+			} else {
+				if (!(this[i] === that[i])) return false;
+			}
+		}
+	}
+	if (this instanceof Object) {
+		for(var i in this) {
+			if (!this.hasOwnProperty(i)) {
+				continue;
+			}
+			if (this[i] instanceof Object) {
+				if (!(that[i] instanceof Object)) 
+					return false;
+
+				if (!(this[i].equals(that[i])))
+					return false;
+			} else {
+				if (!(this[i] === that[i])) return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
 var Assert = YAHOO.util.Assert;
 
 var suite = new YAHOO.tool.TestSuite("suite");
 suite.add(new YAHOO.tool.TestCase({
 	name: "Array functions",
 	testEquality: function() {
-		Assert.isTrue([0,1,2,3,4].equals([0,1,2,3,4]),"shit");
 		Assert.isTrue(
 			[1,2,3].equals([1,2,3]), "[1,2,3] should equal [1,2,3]"
 		);
