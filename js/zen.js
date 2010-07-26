@@ -354,7 +354,7 @@ zen.timeouts = [];
 
 function chain() {
 	// accept a single array as the argument
-	if (arguments.length == 1 && isArray(arguments[0])) arguments = arguments[0]; 
+	if (arguments.length == 1 && arguments[0] instanceof Array) arguments = arguments[0]; 
 	
 	// require an odd number of arguments
 	if (arguments.length % 2 == 0) return;
@@ -432,3 +432,27 @@ function replaceHtml(el, html) {
 	oldEl.parentNode.replaceChild(newEl, oldEl);
 	return newEl;
 };
+
+/* provide window.innerHeight, width for IE
+ browser window size info:
+ -- http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
+ conditional-comment onload for IE:
+ -- http://dean.edwards.name/weblog/2006/06/again/
+*/
+
+/*@cc_on 
+document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+var script = document.getElementById("__ie_onload");
+script.onreadystatechange = function() {
+        if (this.readyState == "complete") {
+			var docEl=document.documentElement;
+			if (docEl && (docEl.clientHeight || docEl.clientWidth)) {
+				window.innerHeight = document.documentElement.clientHeight;
+				window.innerWidth = document.documentElement.clientWidth;
+			} else {
+				window.innerWidth = document.body.clientHeight;
+				window.innerHeight = document.body.clientWidth;
+			}
+        }
+};
+@*/
