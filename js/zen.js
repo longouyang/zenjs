@@ -307,7 +307,8 @@ function centimetersToDegrees(centimeters, viewingDistance) {
 
 // Getting user input
 
-function getKeyboardInput(acceptedKeys, state, callback, duration) {
+function getKeyboardInput(acceptedKeys, fun /* state, duration */) {
+	var state = arguments[2], duration = arguments[3];
 	if (duration) setTimeout("document.onkeydown = null;", duration);
 	var startTime = new Date();
 	
@@ -318,8 +319,8 @@ function getKeyboardInput(acceptedKeys, state, callback, duration) {
 		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
 		if (acceptedKeys.contains(value)) {
-			var userInput = {'response': value, 'rt': endTime - startTime};
-			callback(state, userInput);
+			var input = {response: value, rt: endTime - startTime};
+			fun(input, state);
 		}
 	}
 }
