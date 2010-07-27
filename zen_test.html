@@ -64,6 +64,14 @@ Object.prototype.equals = function(that) {
 var Assert = YAHOO.util.Assert;
 
 var suite = new YAHOO.tool.TestSuite("suite");
+
+suite.add(new YAHOO.tool.TestCase({
+	name: "Console logging",
+	testConsoleLog: function() {
+		console.log("test");
+	}
+}));
+
 suite.add(new YAHOO.tool.TestCase({
 	name: "Array functions",
 	testEquality: function() {
