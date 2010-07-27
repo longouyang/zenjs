@@ -235,6 +235,39 @@ function cartesianProduct(a,b) {
 	return c;
 }
 
+function vector(a,b,c,d) {
+	return [a-c,b-d];
+}
+
+function crossProduct(u,v) {
+	a = u.slice(0);
+	b = v.slice(0);
+	while(a.length < 3) a.push(0);
+	while(b.length < 3) b.push(0);
+	return [a[1]*b[2] - a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1] - a[1]*b[0]];
+}
+
+
+function magnitude(u) {
+	var sum=0;
+	var i=u.length;
+	var t;
+	while(i--) {
+		t = u[i];
+		sum = sum + t*t;
+	}
+	return Math.sqrt(sum);
+}
+
+function dotProduct(u,v) {
+	var sum=0;
+	var i=Math.min(u.length,v.length);
+	while(i--) {
+		sum += u[i]*v[i];
+	}
+	return sum;
+}
+
 var zen = {
 	params: (location.href.split("?")[1]) ? 
 		(location.href.split("?")[1]).split("&").reduce(
