@@ -434,6 +434,12 @@ function replaceHtml(el, html) {
 	return newEl;
 };
 
+if (!console || !console.log) {
+	var console = {
+		log: function() {}
+	}
+}
+
 /* provide window.innerHeight, width for IE
  browser window size info:
  -- http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
