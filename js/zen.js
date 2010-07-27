@@ -268,6 +268,36 @@ function dotProduct(u,v) {
 	return sum;
 }
 
+// Positions is an array of {x,y} points
+function maximumDeviation(positions) {
+	var first = positions[0], last = positions[positions.length-1];
+	var base = vector(first.x, first.y, last.x, last.y);
+	var baseLength = magnitude(base);
+	return positions.reduce(function(max,cur) {
+		cur = vector(first.x,first.y,cur.x,cur.y);
+		var dist = magnitude(crossProduct(base,cur)) / baseLength;
+		return (dist > max) ? dist : max;
+	}, 0);
+}
+
+function areaUnderCurve(positions) {
+	var first = positions[0], last = positions[positions.length-1];
+	var base = vector(first.x, first.y, last.x, last.y);
+	var baseLength = magnitude(base);
+	
+	var lastXOffset = 0;
+	var auc=0;
+	for(var i=0, len = pos.length;i<len;i++) {
+		cur = vector(first.x,first.y,pos[i].x,pos[i].y);
+		var yOffset = magnitude(crossProduct(base,cur)) / baseLength;
+		var xOffset = Math.abs(dotProduct(base,cur)) / baseLength;
+		auc += yOffset * (xOffset - lastXOffset);
+		lastXOffset = xOffset;
+	}
+	return auc;
+	
+}
+
 var zen = {
 	params: (location.href.split("?")[1]) ? 
 		(location.href.split("?")[1]).split("&").reduce(
