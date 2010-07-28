@@ -207,6 +207,10 @@ Array.prototype.shuffle = function(){
 	return this;
 }
 
+Array.prototype.random = function() {
+	return this[coinFlip(this.length)];
+}
+
 // Flip an n-sided coin. Returns numbers in 0..n-1
 // By default, n=2
 function coinFlip(n) {
@@ -456,6 +460,40 @@ function preload(names, id, callback) {
 	};
 	image.src = name;
 }
+
+/*
+function preloadImages(images, callback) {
+	
+	var self = arguments.callee;
+	if (images.length==0 && !self.finished) {
+		self.finished = true;
+		callback();
+	}
+	
+	if (!arguments[3]) {
+		self.finished = false;
+		self.numLoaded = 0;
+	}
+	
+	// By default, attempt for 6 simultaneous downloads
+	var concurrent = arguments[2] || 6;
+	
+	var currentImages = images.splice(0,concurrent);
+	concurrent = currentImages.length;
+	
+	var numLoaded = 0;
+	
+	for(var i=0;i<currentImages.length;i++) {
+		var image = new Image();
+		image.onload = function() { 
+			self.numLoaded++;
+			self(images, callback, 1, true);
+		};
+		image.src = currentImages[i];
+	}
+}
+
+*/
 
 
 // Cookie functions. Taken from PPK
