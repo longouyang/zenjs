@@ -317,6 +317,16 @@ suite.add(new YAHOO.tool.TestCase({
 	testRoundNegative: function() {
 		Math.PI.round(-1);
 	},
+	testAreaUnderCurve: function() {
+	/* integrating sin(x) from 0 to pi should give about 2 */
+var sinePoints = [
+{x: 0, y:  0},{x: 0.157079633, y:  0.156434465},{x: 0.314159265, y:  0.309016994},{x: 0.471238898, y:  0.4539905},{x: 0.628318531, y:  0.587785252},{x: 0.785398163, y:  0.707106781},{x: 0.942477796, y:  0.809016994},{x: 1.099557429, y:  0.891006524},{x: 1.256637061, y:  0.951056516},{x: 1.413716694, y:  0.987688341},{x: 1.570796327, y:  1},{x: 1.727875959, y:  0.987688341},{x: 1.884955592, y:  0.951056516},{x: 2.042035225, y:  0.891006524},{x: 2.199114858, y:  0.809016994},{x: 2.35619449, y:  0.707106781},{x: 2.513274123, y:  0.587785252},{x: 2.670353756, y:  0.4539905},{x: 2.827433388, y:  0.309016994},{x: 2.984513021, y:  0.156434465},{x: 3.141592654, y:  -7.65714E-16}];
+	var sineIntegral = areaUnderCurve(sinePoints);
+	Assert.isTrue(sineIntegral > 1.995 && sineIntegral < 1.996, "integral of sin(x) from 0 to pi should give about 2");
+	var zeroIntegral = areaUnderCurve([{x: 50, y:0}, {x:90, y:0}]);
+	Assert.areEqual(zeroIntegral, 0, "integral of a straight line on the x-axis should be 0");
+	},
+	
 	_should: {
 		error: {
 			testRoundNegative: true

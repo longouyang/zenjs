@@ -291,8 +291,8 @@ function areaUnderCurve(positions) {
 	
 	var lastXOffset = 0;
 	var auc=0;
-	for(var i=0, len = pos.length;i<len;i++) {
-		cur = vector(first.x,first.y,pos[i].x,pos[i].y);
+	for(var i=0, len = positions.length;i<len;i++) {
+		cur = vector(first.x,first.y,positions[i].x,positions[i].y);
 		var yOffset = magnitude(crossProduct(base,cur)) / baseLength;
 		var xOffset = Math.abs(dotProduct(base,cur)) / baseLength;
 		auc += yOffset * (xOffset - lastXOffset);
