@@ -524,14 +524,24 @@ function eraseCookie(name) {
 
 /* From http://blog.stevenlevithan.com/archives/faster-than-innerhtml */
 function replaceHtml(el, html) {
-	var oldEl = typeof el === "string" ? document.getElementById(el) : el;
+	var zenEl;
+	if(typeof el ==="string"){
+		var oldEl = document.getElementById(el);
+		zenEl = el;
+	}
+	else{
+		var oldEl = el;
+		zenEl = el.id;
+	}
 	/*@cc_on // Pure innerHTML is slightly faster in IE
 		oldEl.innerHTML = html;
 		return oldEl;
 	@*/
 	var newEl = oldEl.cloneNode(false);
 	newEl.innerHTML = html;
-	oldEl.parentNode.replaceChild(newEl, oldEl);
+		oldEl.parentNode.replaceChild(newEl, oldEl);
+	if(zenEl != '')
+		zen.elements[zenEl] = newEl;	
 	return newEl;
 };
 
