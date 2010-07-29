@@ -564,3 +564,10 @@ script.onreadystatechange = function() {
         }
 };
 @*/
+
+
+function ____false() { return false; }
+
+document.onselectstart =
+document.oncontextmenu =
+document.ondragstart = ____false;
