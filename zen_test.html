@@ -327,6 +327,29 @@ var sinePoints = [
 	Assert.areEqual(zeroIntegral, 0, "integral of a straight line on the x-axis should be 0");
 	},
 	
+	testMaximumDeviation: function() {
+		Assert.areEqual(maximumDeviation([{x:0, y: 0}, {x: 20, y: 100}, {x: 40, y: 0}]), 100, "MD should be 100 for path with single deviation of 100");
+		/* 
+		 [2]>>>>>>>>>>>[3]          
+		^  .           *
+		^    .       *
+		^      .   *
+		^        *
+		^      *
+		^    *
+		^  *
+		[1]
+		   
+		Drawing of this test case. the path is given by the angled
+		marks (^ and >). The path base is marked by the asterisks (*)
+		and the projection
+		onto the base is marked by the periods (.)
+		
+		*/
+		Assert.areEqual(maximumDeviation([{x:0, y: 0}, {x: 0, y:5*Math.sqrt(2)}, {x:10, y:10}]), 5);
+	
+	},
+	
 	_should: {
 		error: {
 			testRoundNegative: true
