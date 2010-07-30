@@ -548,19 +548,6 @@ function eraseCookie(name) {
 	createCookie(name,"",-1);
 }
 
-/* From http://blog.stevenlevithan.com/archives/faster-than-innerhtml */
-function replaceHtml(el, html) {
-	var oldEl = typeof el === "string" ? document.getElementById(el) : el;
-	/*@cc_on // Pure innerHTML is slightly faster in IE
-		oldEl.innerHTML = html;
-		return oldEl;
-	@*/
-	var newEl = oldEl.cloneNode(false);
-	newEl.innerHTML = html;
-	oldEl.parentNode.replaceChild(newEl, oldEl);
-	return newEl;
-};
-
 if (!console || !console.log) {
 	var console = {
 		log: function() {}
