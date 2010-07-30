@@ -122,6 +122,23 @@ if (!Array.prototype.filter) {
   };
 }
 
+if (!Array.prototype.forEach)
+{
+  Array.prototype.forEach = function(fun /*, thisp*/)
+  {
+    var len = this.length >>> 0;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++)
+    {
+      if (i in this)
+        fun.call(thisp, this[i], i, this);
+    }
+  };
+}
+
 Array.prototype.invoke = function(fun) {
 	var len = this.length >>> 0;
 	if (typeof fun != "function") { throw new TypeError(); }
@@ -151,6 +168,16 @@ Array.prototype.average = function() {
 	if (!this.length) return null;
 	return this.sum()/this.length;
 }
+
+Array.prototype.sd = function() {
+	var avg = this.average();
+	var subSum = this.reduce(function(run,cur) { 
+		var val = cur-avg;
+		return run+val*val;
+	}, 0);
+	return Math.sqrt(1/(this.length - 1) * subSum);
+}
+
 
 Array.prototype.unique = function () {
 	var r=this.concat(), n = this.length;
@@ -374,8 +401,7 @@ function centimetersToDegrees(centimeters, viewingDistance) {
 
 // Getting user input
 
-function getKeyboardInput(acceptedKeys, fun /* state, duration */) {
-	var state = arguments[2], duration = arguments[3];
+function getKeyboardInput(acceptedKeys, fun, state, duration) {
 	if (duration) setTimeout("document.onkeydown = null;", duration);
 	var startTime = new Date();
 	
