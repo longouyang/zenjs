@@ -410,7 +410,6 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 		var endTime = new Date();
 		var e = e || window.event;
 		var value = keyValue(e.charCode || e.keyCode);
-		console.log(value);
 		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
 		if (acceptedKeys.contains(value)) {
