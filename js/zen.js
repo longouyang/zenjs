@@ -408,7 +408,9 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 	// monitor for keypresses
 	document.onkeydown = function(e) {
 		var endTime = new Date();
-		var value = keyValue(window.event ? event.keyCode : e.keyCode);
+		var e = e || window.event;
+		var value = keyValue(e.charCode || e.keyCode);
+		console.log(value);
 		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
 		if (acceptedKeys.contains(value)) {
@@ -418,8 +420,7 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 	}
 }
 
-function keyValue(e) {
-	var code = (window.event) ? event.keyCode : e.keyCode;
+function keyValue(code) {
 	
 	switch (code) {
 		case 13: return "enter";
@@ -548,9 +549,9 @@ function eraseCookie(name) {
 	createCookie(name,"",-1);
 }
 
-if (!console || !console.log) {
-	var console = {
-		log: function() {}
+if (typeof console === "undefined") {
+		var console = {
+			log: function() {}
 	}
 }
 
