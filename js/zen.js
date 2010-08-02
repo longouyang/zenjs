@@ -468,40 +468,37 @@ function clearChain() {
 		clearTimeout(zen.timeouts[i]);
 }
 
-// Preload images sequentially (trickle), rather than all at once (torrent).
+// Preload resources sequentially (trickle), rather than all at once (torrent).
 // This is actually slower on faster computers, but it's guaranteed to work
 // on slower computers.
 
-// TODO: concurrency
-function preload(names, id, callback) {
-	var name = names.shift();
-	if (!name) {
-		callback();
-		return;
-	}
-	var image = new Image();
-	image.onload = function() { 
-		$$$(id).innerHTML = parseInt($$$(id).innerHTML) + 1;
-		setTimeout(function() {preload(names,id,callback) }, 0);
-	};
-	image.src = name;
-}
-
-/*
-function preloadImages(images, callback) {
+function preload(images, callback) {
 	
-	var self = arguments.callee;
-	if (images.length==0 && !self.finished) {
+	var self = preload;
+	if (images.length==self.numLoaded && !self.finished) {
 		self.finished = true;
 		callback();
 	}
 	
+	// 4th argument indicates whether this function was called recursively
 	if (!arguments[3]) {
+		images = images.slice(0);
 		self.finished = false;
 		self.numLoaded = 0;
+		var status = document.createElement("div");
+		status.className = "slide";
+		status.id="_preload";
+		status.style.textAlign = "center";
+		status.innerHTML = "<div style='padding-top: 25px'>Loading " +
+			"resources: <span id='_preload_indicator'>0</span> / " +
+			images.length + "";
+		
+		document.body.appendChild(status);
+		showSlide('_preload');
 	}
 	
-	// By default, attempt for 6 simultaneous downloads
+	// 3rd argument is the number of simultaneous downloads.
+	// If unset, defaults to 6.
 	var concurrent = arguments[2] || 6;
 	
 	var currentImages = images.splice(0,concurrent);
@@ -512,15 +509,13 @@ function preloadImages(images, callback) {
 	for(var i=0;i<currentImages.length;i++) {
 		var image = new Image();
 		image.onload = function() { 
-			self.numLoaded++;
+			$$$('_preload_indicator').innerHTML = ++self.numLoaded;
 			self(images, callback, 1, true);
+			
 		};
 		image.src = currentImages[i];
 	}
 }
-
-*/
-
 
 // Cookie functions. Taken from PPK
 function createCookie(name,value,days) {
