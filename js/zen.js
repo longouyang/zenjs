@@ -572,7 +572,7 @@ script.onreadystatechange = function() {
 				window.innerWidth = document.documentElement.clientWidth;
 			} else {
 				window.innerWidth = document.body.clientWIdth;
-				window.innerHeight = document.body.clientHiehgt;
+				window.innerHeight = document.body.clientHeight;
 			}
         }
 };
