@@ -772,8 +772,8 @@ Array.prototype.generateForm = function(action, method){
 		}
 	}	
 	str = str + "<br /><input type='submit' value='Submit'>";
-	var oldHtml = document.body.innerHTML;
-	document.body.innerHTML = oldHtml + str;
+	//var oldHtml = document.body.innerHTML;
+	//document.body.innerHTML = oldHtml + str;
 	return str;
 }
 
