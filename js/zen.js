@@ -155,6 +155,18 @@ Array.prototype.invoke = function(fun) {
 
 /* Utility functions */
 
+Array.prototype.product = function() {
+	var i = this.length, r = 1;
+	while(i--) {
+		var type = typeof this[i];
+		if (type !== "number") {
+			throw new TypeError("Tried to multiply " + type + " : " + this[i]);
+		}
+		r*= this[i];
+	}
+	return r;
+}
+
 Array.prototype.sum = function() {
 	var i = this.length;
 	var s=0;
@@ -227,6 +239,29 @@ Array.prototype.partition = function(f) {
 	return [haves, haveNots];
 }
 
+Array.prototype.zip = function(a) {
+	var r = [];
+	if (a.length != this.length) {
+		throw new Error("zip takes two equal length arrays");
+	}
+	for(var i=0, len = this.length; i<len;i++) {
+		r.push([this[i], a[i]]);
+	}
+	return r;
+}
+
+
+// From http://tech.karbassi.com/2009/12/17/pure-javascript-flatten-array/
+// Modification - removed object from regex to allow hashes to live
+Array.prototype.flatten = function flatten(){
+   var flat = [];
+   for (var i = 0, l = this.length; i < l; i++){
+       var type = Object.prototype.toString.call(this[i]).split(' ').pop().split(']').shift().toLowerCase();
+       if (type) { flat = flat.concat(/^(array|collection|arguments)$/.test(type) ? flatten.call(this[i]) : this[i]); }
+   }
+   return flat;
+};
+
 // Uses the Fisher-Yates algorithm.
 // Source - http://snippets.dzone.com/posts/show/849
 Array.prototype.shuffle = function(){
@@ -254,13 +289,33 @@ function range(m,n) {
 	return a;
 }
 
-// return the cartesian product of arrays A and B
+// return the cartesian product of an arbitrary number of arrays
 function cartesianProduct(a,b) {
+	if (arguments.length < 2) {
+		throw new TypeError("cartesianProduct takes two or more arguments");
+	}
+	
+	var args = [];
+	for(var i=0;i<arguments.length;i++)
+		args.push(arguments[i].slice());
+
+	if (args.length > 2) {
+		var partial = cartesianProduct(args[0],args[1]);
+		args.splice(0,2);
+		args.unshift(partial);
+		return cartesianProduct.apply(this, args);
+	}
 	var c = [];
+	
 	var a_len=a.length,b_len=b.length;
 	for(var i=0;i<a_len;i++) {
 		for(var j=0;j<b_len;j++) {
-			c.push([a[i],b[j]]);
+			if (!a[i].length) { // check if the left factor is an array
+				t = [a[i]];
+			} else {
+				t = a[i].slice();
+			}
+			c.push(t.concat(b[j]));
 		}
 	}
 	return c;
@@ -566,7 +621,7 @@ script.onreadystatechange = function() {
 				window.innerHeight = document.documentElement.clientHeight;
 				window.innerWidth = document.documentElement.clientWidth;
 			} else {
-				window.innerWidth = document.body.clientWIdth;
+				window.innerWidth = document.body.clientWidth;
 				window.innerHeight = document.body.clientHeight;
 			}
         }
