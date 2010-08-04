@@ -584,3 +584,197 @@ function ____false() { return false; }
 document.onselectstart =
 document.oncontextmenu =
 document.ondragstart = ____false;
+
+/*
+Questionnaire Template
+
+Example usage:
+generateForm(someArray, "somestring", "post");
+
+Action: location where form results are submitted. Action must be a string
+Method: Either 'post' or 'get'. For our purposes, just stick to post
+
+Name: a unique name describing the nature of the question
+
+className(optional): adds this class to the question. Add the same className to any question to group them under that class. For example, if you're tracking some scale 1 that requires the answers for the happy and floss questions, add "scale1" to the className field
+
+question(required): the question
+
+type(required): supports most html input types
+	text: short text input
+	textarea: larger text area
+		requires rows and cols
+	checkbox: multiple item selection
+		requires options[] and values[]
+	radio: single item selection
+		requires options[] and values[]
+	dropdown: single item selection in a dropdown menu
+		requires options[] values[]
+
+**options(required): the set of answers visible to the user
+
+**values(optional): set of number values for computing stats. If you'd like to apply number values to certain answers, use this array to assign values to each answer. 
+	options[] and values[] must be the same length
+	
+**applies to radio, dropdown, and checkbox only
+
+Example survey array;
+
+var survey= [
+{
+	name: "age",
+	question: "How old are you?",
+	type: "text",
+	length: "25"
+},
+{
+	name: "floss",
+	className:"scale1",
+	question: "How often do you floss?",
+	type: "radio",
+	options: ['4 ft','5ft','6ft'],
+	values: [4, 5, 6]
+},
+{
+	name: "happy",
+	className:"scale1",
+	question: "How tall are you in centimeters?",
+	type: "checkbox",
+	options: ['4ft','5ft','6ft'],
+	values: [1, 2, 3]
+},
+{
+	name: "hobbies",
+	question: "What are your hobbies?",
+	type: "textarea",
+	rows: "4",
+	cols: "20"
+},
+{
+	name: "gender",
+	question: "What is your gender?",
+	type: "dropdown",
+	options: ["female","male"],
+	selected: "male"
+}
+];
+*/
+Array.prototype.generateForm = function(action, method){
+	var str = "<form id='form' action='"+action+"'method='"+method+"'>";
+	if(typeof this == "undefined")
+		throw new TypeError("array is not defined");
+	else if(typeof action == "undefined")
+		throw new TypeError("action is not defined");
+	else if(typeof method == "undefined")
+		throw new TypeError("method is not defined");
+	
+	for(var a=0,b;b=this[a];a++){
+		if(typeof b.name == "undefined"||b.name== ''){
+			throw new TypeError("name undefined or no name text");
+		}
+		if(typeof b.question == "undefined"||b.question == ''){
+			throw new TypeError("question undefined or no question text");
+		}
+		else{
+			str = str + "<br /><br />" + b.question + "<br />";		
+		}
+		if(typeof b.type =='undefined' ||b.question == ''){
+			throw new TypeError("question type was not defined or no type text");
+		}
+
+		var classAdd = '';
+		if(typeof b.className != "undefined")
+			classAdd = b.className;
+		//small textbox
+		if(b.type =='text'){
+			if(typeof b.length =='undefined')
+				throw new TypeError('length is not defined');
+			str = str + "<input type='text' class='"+classAdd+"' maxlength='"+b.length+
+				"'id='"+b.name+"' />";
+		}
+
+		//radio button
+		else if(b.type =='radio'){
+			if(typeof b.options =='undefined')
+				throw new TypeError('options array is not defined');
+			else if(typeof b.values =='object'){
+				if(b.options.length != b.values.length)
+					throw new Error('options array and values array are not the same length');
+				for(var i=0, j; j=b.options[i]; i++){
+					str = str + "<label for='" + b.name+i + "'>"+j+"</label><input type='radio' class='"+classAdd+"' name='"+b.name+"' id='"+b.name+i+"' value='"+b.values[i]+"'/>";
+				}
+			}
+			else{
+				for(var i=0, j; j=b.options[i]; i++){
+					str = str + "<label for='" + b.name+i + "'>"+j+"</label><input type='radio' class='"+classAdd+"' name='"+b.name+"' id='"+b.name+i+"' value='"+j+"'/>";
+				}
+			}
+		}
+		
+		//checkbox
+		else if(b.type =='checkbox'){
+			if(typeof b.options =='undefined')
+				throw new TypeError('options array is not defined');
+			else if(typeof b.values =='object'){
+				if(b.options.length != b.values.length)
+					throw new Error('options array and values array are not the same length');
+				for(var i=0, j; j=b.options[i]; i++){
+					str = str + "<label for='" + b.name+i + "'>"+j+"</label><input type='checkbox' class='"+classAdd+"' name='"+b.name+"' id='"+b.name+i+"' value='"+b.values[i]+"'/>";
+				}
+			}
+			else{
+				for(var i=0, j; j=b.options[i]; i++){
+					str = str + "<label for='" + b.name+i + "'>"+j+"</label><input type='checkbox' class='"+classAdd+"' name='"+b.name+"' id='"+b.name+i+"' value='"+j+"'/>";
+				}
+			}
+		}
+
+		//dropdown menu
+		else if(b.type == 'dropdown'){
+			if(typeof b.options =='undefined')
+				throw new TypeError('options array is not defined');
+			else if(typeof b.values =='object'){
+				if(b.options.length != b.values.length)
+					throw new Error('options array and values array are not the same length');
+				str = str + "<select class='"+classAdd+"' name='"+b.name+"'>";
+				for(var i=0, j; j=b.options[i]; i++){
+					if(b.selected==j)
+						str = str+"<option selected='selected' value='"+j+"'>"+j+
+						" </option>";		
+					else
+						str = str+"<option value='"+b.values[i]+"'>"+j+" </option>";		
+				}
+				str = str+"</select>";
+			}	
+			else{
+				str = str + "<select name='"+b.name+"'>";
+				for(var i=0, j; j=b.options[i]; i++){
+					if(b.selected==j)
+						str = str+"<option class='"+classAdd+
+						"' selected='selected' value='"+j+"'>"+j+" </option>";		
+					else
+						str = str+"<option class='"+classAdd+"' value='"+j+"'>"
+						+j+" </option>";		
+				}
+				str = str+"</select>";
+
+			}
+		}
+		//larte textbox (paragraph)
+		else if (b.type =='textarea'){
+			if(typeof b.rows =='undefined' || typeof b.cols =='undefined')
+				throw new TypeError('rows or cols is not defined');
+			else if(b.rows =='' || b.cols=='')
+				throw new Error('rows or cols is blank');
+			str = str + "<textarea name='"+b.name+
+			"' style='overflow: hidden;' class='"+classAdd+"' rows='"+b.rows+
+			"' cols='"+b.cols+"'></textarea>";
+		}
+	}	
+	str = str + "<br /><input type='submit' value='Submit'>";
+	var oldHtml = document.body.innerHTML;
+	document.body.innerHTML = oldHtml + str;
+	return str;
+}
+
+
