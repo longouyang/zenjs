@@ -760,7 +760,7 @@ Array.prototype.generateForm = function(action, method){
 
 			}
 		}
-		//larte textbox (paragraph)
+		//large textbox (paragraph)
 		else if (b.type =='textarea'){
 			if(typeof b.rows =='undefined' || typeof b.cols =='undefined')
 				throw new TypeError('rows or cols is not defined');
