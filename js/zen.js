@@ -810,7 +810,7 @@ Array.prototype.generateForm = function(action, method){
 
 			}
 		}
-		//larte textbox (paragraph)
+		//large textbox (paragraph)
 		else if (b.type =='textarea'){
 			if(typeof b.rows =='undefined' || typeof b.cols =='undefined')
 				throw new TypeError('rows or cols is not defined');
@@ -822,8 +822,8 @@ Array.prototype.generateForm = function(action, method){
 		}
 	}	
 	str = str + "<br /><input type='submit' value='Submit'>";
-	var oldHtml = document.body.innerHTML;
-	document.body.innerHTML = oldHtml + str;
+	//var oldHtml = document.body.innerHTML;
+	//document.body.innerHTML = oldHtml + str;
 	return str;
 }
 

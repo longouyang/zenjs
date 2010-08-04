@@ -357,6 +357,122 @@ var sinePoints = [
 	}
 }));
 
+var survey1=[];
+var survey2=[];
+var survey3=[];
+var survey4=[];
+var survey5=[];
+
+
+suite.add(new YAHOO.tool.TestCase({
+	name: "form generator",
+
+	setUp: function(){
+		survey1[0] = 
+		{
+			name: "age",
+			question: "How old are you?",
+			type: "text",
+			length: "25"
+		};
+		survey2[0] =
+		{
+			name: "floss",
+			className:"scale1",
+			question: "How often do you floss?",
+			type: "radio",
+			options: ['4 ft','5ft','6ft'],
+			values: [4, 5, 6]
+		};
+		survey3[0] = 
+		{
+			name: "happy",
+			className:"scale1",
+			question: "How tall are you in centimeters?",
+			type: "checkbox",
+			options: ['4ft','5ft','6ft'],
+			values: [1, 2, 3]
+		};
+		survey4[0] = 
+		{
+			name: "hobbies",
+			question: "What are your hobbies?",
+			type: "textarea",
+			rows: "4",
+			cols: "20"
+		};
+		survey5[0] = 
+		{
+			name: "gender",
+			question: "What is your gender?",
+			type: "dropdown",
+			options: ["female","male"],
+			selected: "male"
+		};
+	},
+
+	tearDown: function(){
+		delete survey1;
+		delete survey2;
+		delete survey3;
+		delete survey4;
+		delete survey5;
+	},
+	testGenerateForm: function() {
+		Assert.isString(survey1.generateForm('google.com','get'),
+		'blank form should have proper inputs');
+		Assert.areEqual(survey1.generateForm('google.com','get'),
+		"<form id='form' action='google.com'method='get'><br /><br />"+
+		"How old are you?"+
+		"<br />"+
+		"<input type='text' class='' maxlength='25'id='age' />"+
+		"<br /><input type='submit' value='Submit'>" ,
+		'text box doesnt work');
+		Assert.areEqual(survey2.generateForm('google.com','get'),
+		"<form id='form' action='google.com'method='get'><br /><br />"+
+		"How often do you floss?"+
+		"<br />"+
+		"<label for='floss0'>4 ft</label>"+
+		"<input type='radio' class='scale1' name='floss' id='floss0' value='4'/>"+
+		"<label for='floss1'>5ft</label>"+
+		"<input type='radio' class='scale1' name='floss' id='floss1' value='5'/>"+
+		"<label for='floss2'>6ft</label>"+
+		"<input type='radio' class='scale1' name='floss' id='floss2' value='6'/>"+
+		"<br /><input type='submit' value='Submit'>" ,
+		'radio buttons dont work');
+		Assert.areEqual(survey3.generateForm('google.com','get'),
+		"<form id='form' action='google.com'method='get'><br /><br />"+
+		"How tall are you in centimeters?"+
+		"<br />"+
+		"<label for='happy0'>4ft</label>"+
+		"<input type='checkbox' class='scale1' name='happy' id='happy0' value='1'/>"+
+		"<label for='happy1'>5ft</label>"+
+		"<input type='checkbox' class='scale1' name='happy' id='happy1' value='2'/>"+
+		"<label for='happy2'>6ft</label>"+
+		"<input type='checkbox' class='scale1' name='happy' id='happy2' value='3'/>"+
+		"<br /><input type='submit' value='Submit'>" ,
+		'checkboxes dont work');
+		Assert.areEqual(survey4.generateForm('google.com','get'),
+		"<form id='form' action='google.com'method='get'><br /><br />"+
+		"What are your hobbies?<br />"+
+		"<textarea name='hobbies' style='overflow: hidden;' class='' "+
+		"rows='4' cols='20'></textarea>"+
+		"<br /><input type='submit' value='Submit'>" ,
+		'text area doesnt work ');
+		Assert.areEqual(survey5.generateForm('google.com','get'),
+		"<form id='form' action='google.com'method='get'><br /><br />"+
+		"What is your gender?"+
+		"<br />"+
+		"<select name='gender'>"+
+		"<option class='' value='female'>female </option>"+
+		"<option class='' selected='selected' value='male'>male </option>"+
+		"</select>"+
+		"<br /><input type='submit' value='Submit'>" ,
+		'dropdown menus dont work');
+		
+	}
+}));
+
 /* TODO:
 cartesianProduct
 randomness test
