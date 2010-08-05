@@ -530,7 +530,7 @@ function clearChain() {
 function preload(images, callback) {
 	
 	var self = preload;
-	if (images.length==self.numLoaded && !self.finished) {
+	if (images.length==0 && !self.finished) {
 		self.finished = true;
 		callback();
 	}
