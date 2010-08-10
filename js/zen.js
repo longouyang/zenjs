@@ -310,7 +310,8 @@ function cartesianProduct(a,b) {
 	var a_len=a.length,b_len=b.length;
 	for(var i=0;i<a_len;i++) {
 		for(var j=0;j<b_len;j++) {
-			if (!a[i].length) { // check if the left factor is an array
+			// check if the left factor is not an array
+			if (typeof a[i] !== "array") { 
 				t = [a[i]];
 			} else {
 				t = a[i].slice();
@@ -513,14 +514,17 @@ function chain() {
 	
 	var len = arguments.length;
 	// uses arguments.length b/c different browsers are weird with "for var i in arguments"
+	
+	var r = [];
 	for(var i=2, execute_time=arguments[i-1]; i<len ; i+=2, execute_time += arguments[i-1]) {
-		zen.timeouts.push(setTimeout(arguments[i], execute_time));
+		r.push(setTimeout(arguments[i], execute_time));
 	}
+	return r;
 }
 
-function clearChain() {
-	for(var i=0;i<zen.timeouts.length;i++)
-		clearTimeout(zen.timeouts[i]);
+function clearChain(a) {
+	for(var i=0, len = a.length;i<len;i++)
+		clearTimeout(a[i]);
 }
 
 // Preload resources sequentially (trickle), rather than all at once (torrent).
