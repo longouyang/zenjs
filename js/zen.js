@@ -462,12 +462,12 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 	
 	// monitor for keypresses
 	document.onkeydown = function(e) {
-		var endTime = new Date();
 		var e = e || window.event;
 		var value = keyValue(e.charCode || e.keyCode);
 		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
 		if (acceptedKeys.contains(value)) {
+			var endTime = new Date();
 			var input = {response: value, rt: endTime - startTime};
 			fun(input, state);
 		}
