@@ -790,7 +790,12 @@ function generateForm(survey, node, action, method, buttonText){
 		str += '</div></p></li>';
 		
 	}
-	str = str + "<br /><button type='submit'>"+buttonText+"</button></form>";
+	if(buttonText){
+		str = str + "<br /><button type='submit'>"+buttonText+"</button></form>";
+	}
+	else{
+		str = str + "<br /><button type='submit'>Next</button></form>";
+	}
 	node.innerHTML += str;
 	//return str;
 	$$$(formId).validate = function() {
