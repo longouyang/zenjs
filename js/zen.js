@@ -722,7 +722,7 @@ function insertAfter( referenceNode, newNode )
 }
 
 //survey and action are required, method is optional
-function generateForm(survey, node, action, method){
+function generateForm(survey, node, action, method, buttonText){
 	var self = generateForm;
 	
 	function tag(kind, options) {
@@ -751,7 +751,7 @@ function generateForm(survey, node, action, method){
 	var str = "<form id='"+formId+"' action='"+action+"' method='"+method+"' onsubmit='return this.validate();'><ol>";
 	for(var a=0,b;b=survey[a];a++){
 		if(b.question!=''){
-			str += "<li><div class='zen_question'>" + b.question + "</div><div class='zen_input'>";		
+			str += "<li><p><div class='zen_question'>" + b.question + "</div><div class='zen_input'>";		
 		}
 		
 		switch(b.type) {
@@ -787,10 +787,10 @@ function generateForm(survey, node, action, method){
 
 		}
 		
-		str += '</div></li>';
+		str += '</div></p></li>';
 		
 	}
-	str = str + "<br /><button type='submit'>Submit</button></form>";
+	str = str + "<br /><button type='submit'>"+buttonText+"</button></form>";
 	node.innerHTML += str;
 	//return str;
 	$$$(formId).validate = function() {
