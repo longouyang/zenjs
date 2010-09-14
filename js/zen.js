@@ -455,19 +455,31 @@ function centimetersToDegrees(centimeters, viewingDistance) {
 	return 2 * Math.atan2(centimeters, 2* viewingDistance) * 180 / Math.PI;
 }
 
-// Getting user input
-
+// Get keyboard input
+// 
 function getKeyboardInput(acceptedKeys, fun, state, duration) {
-	if (duration) setTimeout("document.onkeydown = null;", duration);
+	if (!(acceptedKeys instanceof Array || acceptedKeys === "any")) throw new TypeError();
+	
+	if (duration) setTimeout(function() {document.onkeydown = null;}, duration);
 	var startTime = new Date();
 	
 	// monitor for keypresses
 	document.onkeydown = function(e) {
 		var e = e || window.event;
+		
+		// IE
+		e.returnValue = false;
+		e.cancelBubble = true;
+		
+		if (e.preventDefault) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+			
 		var value = keyValue(e.charCode || e.keyCode);
 		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
-		if (acceptedKeys.contains(value)) {
+		if (acceptedKeys === "any" || acceptedKeys.contains(value)) {
 			var endTime = new Date();
 			var input = {response: value, rt: endTime - startTime};
 			fun(input, state);
@@ -475,9 +487,12 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 	}
 }
 
+
+
 function keyValue(code) {
-	
 	switch (code) {
+		case 8: return "backspace";
+		case 9: return "tab";
 		case 13: return "enter";
 		case 27: return "escape";
 		case 32: return "space";
@@ -485,6 +500,18 @@ function keyValue(code) {
 		case 38: return "up";
 		case 39: return "right";
 		case 40: return "down";
+		case 46: return "delete";
+		case 186: return ";";
+		case 187: return "=";
+		case 188: return ",";
+		case 189: return "-";
+		case 190: return ".";
+		case 191: return "/";
+		case 192: return "`";
+		case 219: return "[";
+		case 220: return '\\';
+		case 221: return "]";
+		case 222: return "'";
 	}
 
 	// numbers
