@@ -467,52 +467,66 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 	document.onkeydown = function(e) {
 		var e = e || window.event;
 		
-		// IE
-		e.returnValue = false;
-		e.cancelBubble = true;
 		
-		if (e.preventDefault) {
-			e.preventDefault();
-			e.stopPropagation();
-		}
-			
-		var value = keyValue(e.charCode || e.keyCode);
+		var v = e.charCode || e.keyCode;
+		console.log(v);
+		var value = keyValue(v);
 		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
 		if (acceptedKeys === "any" || acceptedKeys.contains(value)) {
+			// IE
+			e.returnValue = false;
+			e.cancelBubble = true;
+
+			if (e.preventDefault) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			
 			var endTime = new Date();
 			var input = {response: value, rt: endTime - startTime};
 			fun(input, state);
 		}
+		return false;
 	}
 }
 
 
 
 function keyValue(code) {
-	switch (code) {
-		case 8: return "backspace";
-		case 9: return "tab";
-		case 13: return "enter";
-		case 27: return "escape";
-		case 32: return "space";
-		case 37: return "left";
-		case 38: return "up";
-		case 39: return "right";
-		case 40: return "down";
-		case 46: return "delete";
-		case 186: return ";";
-		case 187: return "=";
-		case 188: return ",";
-		case 189: return "-";
-		case 190: return ".";
-		case 191: return "/";
-		case 192: return "`";
-		case 219: return "[";
-		case 220: return '\\';
-		case 221: return "]";
-		case 222: return "'";
+	
+	// There are duplicates here because different browsers
+	// use slightly different codes for some special characters
+	// See http://unixpapa.com/js/key.html
+	var specialKeys = {
+		8: "backspace",
+		9: "tab",
+		13: "enter",
+		27: "escape",
+		32: "space",
+		37: "left",
+		38: "up",
+		39: "right",
+		40: "down",
+		46: "delete",
+		59: ";",
+		61: "=",
+		107: "=", // not ideal, since this is + on numpad keyboards
+		109: "-",
+		186: ";",
+		187: "=",
+		188: ",",
+		189: "-",
+		190: ".",
+		191: "/",
+		192: "`",
+		219: "[",
+		220: '\\',
+		221: "]",
+		222: "'"
 	}
+	
+	if (specialKeys[code]) return specialKeys[code];
 
 	// numbers
 	if (code > 47 && code < 58 ) return code - 48;
