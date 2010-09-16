@@ -467,9 +467,7 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 	document.onkeydown = function(e) {
 		var e = e || window.event;
 		
-		
 		var v = e.charCode || e.keyCode;
-		console.log(v);
 		var value = keyValue(v);
 		// ignore keys pressed not in acceptedKeys
 		// e.g. if user accidentally pressed another key
@@ -490,8 +488,6 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 		return false;
 	}
 }
-
-
 
 function keyValue(code) {
 	
