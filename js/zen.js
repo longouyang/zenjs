@@ -484,8 +484,9 @@ function getKeyboardInput(acceptedKeys, fun, state, duration) {
 			var endTime = new Date();
 			var input = {response: value, rt: endTime - startTime};
 			fun(input, state);
+			return false;
 		}
-		return false;
+		
 	}
 }
 
