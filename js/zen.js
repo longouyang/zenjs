@@ -290,17 +290,19 @@ function range(m,n) {
 }
 
 // Returns set of vertices that define a polygon with n sides and vertex radius r.
-function polygon(n, r) {
+function polygon(n, r, offsetX, offsetY) {
 	if (typeof n != "number" || !n || n < 3)
 		throw new TypeError('polygon() requires a number greater than 2');
-	if (!r) r = 100;
+	if (typeof r!= "number" || !r) r = 100;
+	if (typeof offsetX != "number" || !offsetX) offsetX = 0;
+	if (typeof offsetY != "number" || !offsetY) offsetY = 0;
 	
 	var pi = Math.PI, theta = 2*pi/n, angle = -pi/n;
 	var sin = Math.sin, cos = Math.cos, points = [];
 	while(n--) {
 		points.push({
-			x: Math.round(r*sin(angle)),
-			y: Math.round(r*cos(angle))
+			x: Math.round(r*sin(angle)) + offsetX,
+			y: Math.round(r*cos(angle)) + offsetY
 		});
 		angle += theta;
 	}
@@ -688,12 +690,15 @@ script.onreadystatechange = function() {
 };
 @*/
 
+function disableSelect() {
+	document.onselectstart = document.ondragstart = 
+	function() { return false; }
+}
 
-function ____false() { return false; }
+function disableRightClick() {
+	document.oncontextmenu = function() { return false; }
+}
 
-document.onselectstart =
-document.oncontextmenu =
-document.ondragstart = ____false;
 
 /*
 Questionnaire Template
