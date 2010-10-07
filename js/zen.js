@@ -153,6 +153,34 @@ Array.prototype.invoke = function(fun) {
 	return res;
 }
 
+window.getHeight = function() {
+	var y = 0;
+	
+	if (self.innerHeight) {
+		y = self.innerHeight;
+	} else if (	document.documentElement &&
+				document.documentElement.clientHeight) {
+		y = document.documentElement.clientHeight;
+	} else if (document.body) {
+		y = document.body.clientHeight;
+	}
+
+	return y;
+}
+
+window.getWidth = function() {
+	var x = 0;
+	if (self.innerWidth) {
+		x = self.innerWidth;
+	} else if (	document.documentElement &&
+				document.documentElement.clientWidth) {
+		x = document.documentElement.clientWidth;
+	} else if (document.body) {
+		x = document.body.clientWidth;
+	}
+	return x;
+}
+
 /* Utility functions */
 
 Array.prototype.product = function() {
@@ -646,36 +674,21 @@ if (typeof console === "undefined") {
 	}
 }
 
-/* provide window.innerHeight, width for IE
- browser window size info:
- -- http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
- conditional-comment onload for IE:
- -- http://dean.edwards.name/weblog/2006/06/again/
-*/
-
-/*@cc_on 
-document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
-var script = document.getElementById("__ie_onload");
-script.onreadystatechange = function() {
-        if (this.readyState == "complete") {
-			var docEl=document.documentElement;
-			if (docEl && (docEl.clientHeight || docEl.clientWidth)) {
-				window.innerHeight = document.documentElement.clientHeight;
-				window.innerWidth = document.documentElement.clientWidth;
-			} else {
-				window.innerWidth = document.body.clientWidth;
-				window.innerHeight = document.body.clientHeight;
-			}
-        }
-};
-@*/
 
 
-function ____false() { return false; }
 
-document.onselectstart =
-document.oncontextmenu =
-document.ondragstart = ____false;
+
+function disableSelect() {
+	document.onselectstart = function() { return false; }
+}
+
+function disableRightClick() {
+	document.oncontextmenu = function() { return false; }
+}
+
+function disableDrag() {
+	document.ondragstart = function() { return false; }
+}
 
 /*
 Questionnaire Template
