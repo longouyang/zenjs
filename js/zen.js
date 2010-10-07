@@ -153,7 +153,7 @@ Array.prototype.invoke = function(fun) {
 	return res;
 }
 
-window.getHeight = function() {
+getWindowHeight = function() {
 	var y = 0;
 	
 	if (self.innerHeight) {
@@ -168,7 +168,7 @@ window.getHeight = function() {
 	return y;
 }
 
-window.getWidth = function() {
+getWindowWidth = function() {
 	var x = 0;
 	if (self.innerWidth) {
 		x = self.innerWidth;
