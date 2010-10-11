@@ -317,6 +317,26 @@ function range(m,n) {
 	return a;
 }
 
+// Returns set of vertices that define a polygon with n sides and vertex radius r.
+function polygon(n, r, offsetX, offsetY) {
+	if (typeof n != "number" || !n || n < 3)
+		throw new TypeError('polygon() requires a number greater than 2');
+	if (typeof r!= "number" || !r) r = 100;
+	if (typeof offsetX != "number" || !offsetX) offsetX = 0;
+	if (typeof offsetY != "number" || !offsetY) offsetY = 0;
+	
+	var pi = Math.PI, theta = 2*pi/n, angle = -pi/n;
+	var sin = Math.sin, cos = Math.cos, points = [];
+	while(n--) {
+		points.push({
+			x: Math.round(r*sin(angle)) + offsetX,
+			y: Math.round(r*cos(angle)) + offsetY
+		});
+		angle += theta;
+	}
+	return points;
+}
+
 // return the cartesian product of an arbitrary number of arrays
 function cartesianProduct(a,b) {
 	if (arguments.length < 2) {
@@ -674,10 +694,6 @@ if (typeof console === "undefined") {
 	}
 }
 
-
-
-
-
 function disableSelect() {
 	document.onselectstart = function() { return false; }
 }
@@ -689,6 +705,7 @@ function disableRightClick() {
 function disableDrag() {
 	document.ondragstart = function() { return false; }
 }
+
 
 /*
 Questionnaire Template
