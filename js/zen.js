@@ -978,6 +978,8 @@ function Stream(options) {
 			o.slide = newSlide(o.slideHtml);
 			showSlide(o.slide);
 		}
+		
+		if (options.setup) { options.setup(); }
 	
 	}
 
