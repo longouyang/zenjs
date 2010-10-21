@@ -451,21 +451,41 @@ function $$$(id) {
 	return zen.elements[id];
 }
 
-// Show slide with id and hide the rest
-// Optimizations - it skips DOM elements that already have the
-// right visibility value set
-function showSlide(id) {
-	if (!zen.slides) {
-		zen.slides = document.getElementsByClassName("slide");
-	}
-	var change_to, slides = zen.slides;
-	var i = zen.slides.length;
+function newSlide(innerHtml, id) {
+	if (!newSlide.counter) newSlide.counter = 1;
+	
+	var slide = document.createElement("div");
+	slide.className = "slide";
+	slide.id = id ? id : "___newSlide" + newSlide.counter++;
+	slide.innerHTML = innerHtml;
+	document.body.appendChild(slide);
+	return slide;
+}
+
+// Show a slide. Takes either a div ID or element
+function showSlide(s) {
+	
+	var slides = document.getElementsByClassName("slide"), i = slides.length;
+	var proceed = false;
+	
+	if (s instanceof HTMLElement && s.className=="slide")  proceed = true;
+	if (typeof s == "string" && (s = document.getElementById(s))) proceed = true;
+	
+	if (!proceed) throw new Error('invalid arguments');
 	
 	while(i--) {
-		change_to = (slides[i].id == id ? 'block' : 'none');
- 		if (slides[i].style.display == change_to) continue;
-		slides[i].style.display = change_to;
+		var slide = slides[i];
+		if (slide.activeSlide) {
+			slide.style.display = "none";
+			slide.activeSlide = null;
+		}
 	}
+	
+	s.activeSlide = true;
+	s.style.display = "block";
+	
+	
+	
 }
 
 Number.prototype.isPositive = function() {
@@ -923,6 +943,70 @@ function generateForm(survey, node, action, method, buttonText){
 		});
 		//console.log("validation passed: " + !error);
 		return finalCheck;
+	}
+
+}
+
+function Stream(options) {
+
+	function include(arr,obj) { return (arr.indexOf(obj) != -1); }
+
+	var keys = ["initStatus","trials","completed","start","end","trialStart","trialEnd"];
+
+	options = options || {};
+
+	var o = {
+		trials: options.trials || {},
+		completed: [],
+		trialStart: options.trialStart || function() {},
+		trialEnd: options.trialEnd || function() {},
+		after: options.after || function() {},
+		initStatus: false,
+		slide: options.slide || false,
+		slideId: options.slideId || false,
+		slideHtml: options.slideHtml || false
+	}
+
+
+	o.setup = function() {
+		o.initStatus = true;
+		if (o.slideId) {
+			showSlide(slideId);
+		} else if (o.slide) {
+			// todo
+		} else if (o.slideHtml) {
+			o.slide = newSlide(o.slideHtml);
+			showSlide(o.slide);
+		}
+	
+	}
+
+	o.start = function() {
+		if (!o.initStatus || options.forceSetup) o.setup();
+
+		var trial = o.trials[0];
+		if (!trial) return;
+
+		o.trialStart(trial);
+	}
+
+	o.end = function() {
+		var trial = o.trials.shift();
+		o.completed.push(trial);
+	
+		o.trialEnd(trial);
+	
+		if (o.trials.length) {
+			o.start();
+		} else {
+			o.after();
+		}
+	}
+
+	for(var key in o) {
+		if (include(keys, key)) {
+			this[key] = o[key];
+		}
 	}
 
 }
