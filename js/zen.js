@@ -952,62 +952,59 @@ function Stream(options) {
 	function include(arr,obj) { return (arr.indexOf(obj) != -1); }
 
 	var keys = ["initStatus","trials","completed","start","end","trialStart","trialEnd"];
+	
+	var me = this;
 
 	options = options || {};
 
-	var o = {
-		trials: options.trials || [],
-		completed: [],
-		trialStart: options.trialStart || function() {},
-		trialEnd: options.trialEnd || function() {},
-		after: options.after || function() {},
-		initStatus: false,
-		slide: options.slide || false,
-		slideId: options.slideId || false,
-		slideHtml: options.slideHtml || false
-	}
+	me.trials = options.trials || [];
+	me.completed = [];
+	me.trialStart = options.trialStart || function() {};
+	me.trialEnd = options.trialEnd || function() {};
+	me.after = options.after || function() {};
+	me.initStatus = false;
+	me.slide = options.slide || false;
+	me.slideId = options.slideId || false;
+	me.slideHtml = options.slideHtml || false;
 
 
-	o.setup = function() {
-		o.initStatus = true;
-		if (o.slideId) {
+	me.setup = function() {
+		this.initStatus = true;
+		if (this.slideId) {
 			showSlide(slideId);
-		} else if (o.slide) {
+		} else if (this.slide) {
 			// todo
-		} else if (o.slideHtml) {
-			o.slide = newSlide(o.slideHtml);
-			showSlide(o.slide);
+		} else if (this.slideHtml) {
+			this.slide = newSlide(this.slideHtml);
+			showSlide(this.slide);
 		}
 		
 		if (options.setup) { options.setup(); }
-	
+		
 	}
 
-	o.start = function() {
-		if (!o.initStatus || options.forceSetup) o.setup();
+	me.start = function() {
+		
+		if (!me.initStatus || options.forceSetup) me.setup();
 
-		var trial = o.trials[0];
+		var trial = me.trials[0];
 		if (!trial) return;
+		
 
-		o.trialStart(trial);
+		me.trialStart(trial);
 	}
-
-	o.end = function() {
-		var trial = o.trials.shift();
-		o.completed.push(trial);
 	
-		o.trialEnd(trial);
+	me.end = function() {
+		var trial = me.trials.shift();
+		me.completed.push(trial);
 	
-		if (o.trials.length) {
-			o.start();
+		me.trialEnd(trial);
+	
+		
+		if (me.trials.length) {
+			me.start();
 		} else {
-			o.after();
-		}
-	}
-
-	for(var key in o) {
-		if (include(keys, key)) {
-			this[key] = o[key];
+			me.after();
 		}
 	}
 
