@@ -956,7 +956,7 @@ function Stream(options) {
 	options = options || {};
 
 	var o = {
-		trials: options.trials || {},
+		trials: options.trials || [],
 		completed: [],
 		trialStart: options.trialStart || function() {},
 		trialEnd: options.trialEnd || function() {},
