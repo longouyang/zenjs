@@ -950,8 +950,6 @@ function generateForm(survey, node, action, method, buttonText){
 function Stream(options) {
 
 	function include(arr,obj) { return (arr.indexOf(obj) != -1); }
-
-	var keys = ["initStatus","trials","completed","start","end","trialStart","trialEnd"];
 	
 	var me = this;
 
@@ -969,14 +967,14 @@ function Stream(options) {
 
 
 	me.setup = function() {
-		this.initStatus = true;
-		if (this.slideId) {
+		me.initStatus = true;
+		if (me.slideId) {
 			showSlide(slideId);
-		} else if (this.slide) {
+		} else if (me.slide) {
 			// todo
-		} else if (this.slideHtml) {
-			this.slide = newSlide(this.slideHtml);
-			showSlide(this.slide);
+		} else if (me.slideHtml) {
+			me.slide = newSlide(me.slideHtml);
+			showSlide(me.slide);
 		}
 		
 		if (options.setup) { options.setup(); }
