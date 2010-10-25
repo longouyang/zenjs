@@ -808,9 +808,9 @@ function insertAfter( referenceNode, newNode )
 {
     referenceNode.parentNode.insertBefore( newNode, referenceNode.nextSibling );
 }
-
 //survey and action are required, method is optional
 function generateForm(survey, node, action, method, buttonText){
+	var results = [];
 	var self = generateForm;
 	
 	function tag(kind, options) {
@@ -879,13 +879,13 @@ function generateForm(survey, node, action, method, buttonText){
 		
 	}
 	if(buttonText){
-		str = str + "<br /><button type='submit'>"+buttonText+"</button></form>";
+		str = str + "<br /><button type='submit'>"+buttonText+"</button>";
 	}
 	else{
-		str = str + "<br /><button type='submit'>Next</button></form>";
+		str = str + "<br /><button type='submit'>Next</button>";
 	}
+	str = str + "<input type='hidden' name='data' id='data' /><input type='hidden' name='score' id='score'/></form>";
 	node.innerHTML += str;
-	//return str;
 	$$$(formId).validate = function() {
 		var finalCheck = true;
 		var error = false;
@@ -913,7 +913,16 @@ function generateForm(survey, node, action, method, buttonText){
 				}
 				
 				el = $$$(item.name+"["+(i-1)+"]");
-			} else {
+			} 
+			// Search through dropdown options
+			else if( item.type == "dropdown"){
+				el = form[item.name];
+				value = $$$(item.name).options[0].selected;
+				value = !value;	
+				item.validate = function(o) {return o;};
+			}
+			
+			else {
 				el = form[item.name];
 				value = el.value;
 			}
@@ -938,13 +947,20 @@ function generateForm(survey, node, action, method, buttonText){
 				//console.log(id + " failed");
 			} else {
 				errorEl.innerHTML = "";
-				
+				var answer = $$$(item.name).value;
+				results.push({'question': item.name, 'answer': answer});	
 			}
 		});
+		$$$('data').value =JSON.stringify(results);
+		$$$('score').value = 0;
 		//console.log("validation passed: " + !error);
-		return finalCheck;
+		if(finalCheck){
+			$$$(formId).submit();
+		}
+		else{
+			return finalCheck;
+		}
 	}
-
 }
 
 function Stream(options) {
