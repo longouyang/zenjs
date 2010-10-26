@@ -468,7 +468,7 @@ function showSlide(s) {
 	var slides = document.getElementsByClassName("slide"), i = slides.length;
 	var proceed = false;
 	
-	if (s instanceof HTMLElement && s.className=="slide")  proceed = true;
+	if (s.className=="slide")  proceed = true;
 	if (typeof s == "string" && (s = document.getElementById(s))) proceed = true;
 	
 	if (!proceed) throw new Error('invalid arguments');
@@ -959,6 +959,7 @@ function Stream(options) {
 	me.completed = [];
 	me.trialStart = options.trialStart || function() {};
 	me.trialEnd = options.trialEnd || function() {};
+	me.setup = options.setup || function() {};
 	me.after = options.after || function() {};
 	me.initStatus = false;
 	me.slide = options.slide || false;
@@ -966,10 +967,10 @@ function Stream(options) {
 	me.slideHtml = options.slideHtml || false;
 
 
-	me.setup = function() {
+	me.init = function() {
 		me.initStatus = true;
 		if (me.slideId) {
-			showSlide(slideId);
+			showSlide(me.slideId);
 		} else if (me.slide) {
 			// todo
 		} else if (me.slideHtml) {
@@ -977,13 +978,13 @@ function Stream(options) {
 			showSlide(me.slide);
 		}
 		
-		if (options.setup) { options.setup(); }
+		if (me.setup) { me.setup(); }
 		
 	}
 
 	me.start = function() {
 		
-		if (!me.initStatus || options.forceSetup) me.setup();
+		if (!me.initStatus || options.forceSetup) me.init();
 
 		var trial = me.trials[0];
 		if (!trial) return;
