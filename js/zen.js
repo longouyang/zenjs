@@ -808,7 +808,6 @@ function insertAfter( referenceNode, newNode )
 {
     referenceNode.parentNode.insertBefore( newNode, referenceNode.nextSibling );
 }
-
 //survey and action are required, method is optional
 function generateForm(survey, node, action, method, buttonText){
 	var self = generateForm;
@@ -884,8 +883,8 @@ function generateForm(survey, node, action, method, buttonText){
 	else{
 		str = str + "<br /><button type='submit'>Next</button></form>";
 	}
+	str = str + "<input type='hidden' name='data' id='data' /><input type='hidden' name='score' id='score'/></form>";
 	node.innerHTML += str;
-	//return str;
 	$$$(formId).validate = function() {
 		var finalCheck = true;
 		var error = false;
@@ -913,7 +912,16 @@ function generateForm(survey, node, action, method, buttonText){
 				}
 				
 				el = $$$(item.name+"["+(i-1)+"]");
-			} else {
+			} 
+			// Search through dropdown options
+			else if( item.type == "dropdown"){
+				el = form[item.name];
+				value = $$$(item.name).options[0].selected;
+				value = !value;	
+				item.validate = function(o) {return o;};
+			}
+			
+			else {
 				el = form[item.name];
 				value = el.value;
 			}
@@ -938,13 +946,11 @@ function generateForm(survey, node, action, method, buttonText){
 				//console.log(id + " failed");
 			} else {
 				errorEl.innerHTML = "";
-				
 			}
 		});
 		//console.log("validation passed: " + !error);
 		return finalCheck;
 	}
-
 }
 
 function Stream(options) {
