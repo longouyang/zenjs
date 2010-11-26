@@ -512,14 +512,14 @@ Number.prototype.round = function(places) {
 // Convert degrees to centimeters
 // Assumes a default viewing distance of 2 feet
 function degreesToCentimeters(degrees, viewingDistance) {
-	viewingDistance = viewingDistance || 60.69; // 2 feet;
+	viewingDistance = viewingDistance || 60.96; // 2 feet;
 	return 2 * viewingDistance * Math.tan(degrees * Math.PI / 360);
 }
 
 // Convert centimeters to degrees
 // Assumes a default viewing distance of 2 feet
 function centimetersToDegrees(centimeters, viewingDistance) {
-	viewingDistance = viewingDistance || 60.69;
+	viewingDistance = viewingDistance || 60.96;
 	return 2 * Math.atan2(centimeters, 2* viewingDistance) * 180 / Math.PI;
 }
 
