@@ -1,20 +1,3 @@
-(function() {
-
-window.$z = window.$z || {};
-var ArrayProto = Array.prototype;
-
-// Define Javascript 1.8 array functions if we don't have them
-if (!ArrayProto.indexOf) {
-	ArrayProto.indexOf = function(obj){
-		for(var i=0; i<this.length; i++){
-			if(this[i]===obj){
-				return i;
-			}
-		}
-		return -1;
-	}
-}
-
 /*
 zen 0.3
 Author: Long Ouyang
@@ -26,6 +9,9 @@ Notes: libraries that are usefully combined with zen:
 -FlashCanvas
 */
 
+(function() {
+
+window.$z = window.$z || {};
 
 /*
  =======================================================
@@ -34,6 +20,19 @@ Notes: libraries that are usefully combined with zen:
  =======================================================
  =======================================================
 */
+
+var ArrayProto = Array.prototype;
+
+if (!ArrayProto.indexOf) {
+	ArrayProto.indexOf = function(obj){
+		for(var i=0; i<this.length; i++){
+			if(this[i]===obj){
+				return i;
+			}
+		}
+		return -1;
+	}
+}
 
 if (!ArrayProto.map) {
   ArrayProto.map = function(fun /*, thisp*/) {
@@ -267,7 +266,7 @@ ArrayProto.zip = function (other) {
 	return result;
 }
 
-Array.prototype.zipWith = function (other, fun) {
+ArrayProto.zipWith = function (other, fun) {
 	var result = [], length = Math.min(this.length, other.length);
 
 	for (var i=0; i<length; i++) {
@@ -284,6 +283,19 @@ Array.prototype.zipWith = function (other, fun) {
  =======================================================
  =======================================================
 */
+
+// Log function
+var log = [];
+$z.log = function(str) {
+	log.push(str);
+	if (console && console.log) {
+		console.log(str);
+	}
+}
+
+$z.getLog = function() {
+	return log.join("\n");
+}
 
 // Variadic direct product
 $z.dp = function() {
@@ -433,6 +445,71 @@ $z.clearChain = function(chain) {
 $z.id = function(id) {
 	return document.getElementById(id);
 }
+
+// Preload resources sequentially (trickle), rather than all at once (torrent).
+// This is actually slower on faster computers, but it's guaranteed to work
+// on slower computers.
+$z.preload = function(resources, options /* afterEach, after, width */) {
+	var resources = resources.slice(),
+			finished = false,
+			numLoaded = 0;
+	
+	if (!options) options = {};
+	
+	var afterEach = options.afterEach || function() {},
+			after = options.after || function() {},
+			width = options.width || 6;
+	
+	var loadNext = function() {
+		var filename = resources.shift();
+		if (!filename)  {
+			if (!finished) {
+				finished = true;
+				after();
+			}
+			return;
+		}
+		var imageExp = /.jpg|.jpeg|.gif|.png|.bmp|.tif|.tiff/,
+				audioExp = /.mp3/,
+				obj, embedTag;
+		
+		if (filename.match(imageExp)) {
+			obj = new Image();
+		} else {
+			embedTag = true;
+			obj = document.createElement('iframe');
+		}
+		
+		obj.onload = function() {
+			document.body.removeChild(this);
+			afterEach(filename);
+			loadNext();
+		}
+		
+		obj.onerror = function(e) {
+			$z.log("error");
+		}
+		
+		if (embedTag) {
+			obj.style.width = "0px";
+			obj.style.height = "0px";
+			obj.style.border = "0";
+			obj.style.margin = "0";
+			obj.style.padding = "0";
+			obj.src = filename;
+			
+			document.body.appendChild(obj);
+
+		} else {
+			obj.src = filename;
+		}
+	}
+	
+	var times = Math.min(width, resources.length);
+	while(times--) {
+		loadNext();
+	}
+};
 
 /*
  =======================================================
@@ -593,6 +670,7 @@ var keyValue = function(code) {
 
 // getKey("a","b","c",...,duration, after, once)
 // TODO: change {once} argument to {times}.
+// TODO: rewrite using addEventListener
 $z.getKey = function(options) {
 	var numArgs = arguments.length;
 	if (!numArgs) return;
