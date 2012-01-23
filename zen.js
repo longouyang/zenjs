@@ -1,25 +1,19 @@
-/*
-zen 0.3
-Author: Long Ouyang
-
-Notes: libraries that are usefully combined with zen:
--json2.js
--jQuery
--soundManager
--FlashCanvas
-*/
+// zen 0.4
+// (c) 2011 Long Ouyang
 
 (function() {
 
 window.$z = window.$z || {};
 
-/*
- =======================================================
- =======================================================
- Array prototype extensions
- =======================================================
- =======================================================
-*/
+// Private utility methods
+// -----------------------
+
+var bind = function(f, scope) {
+  return function() { return f.apply(scope, arguments); }
+}
+
+// Array prototype extensions
+// --------------------------
 
 var ArrayProto = Array.prototype;
 
@@ -277,19 +271,18 @@ ArrayProto.zipWith = function (other, fun) {
 }
 
 /*
- =======================================================
- =======================================================
  Math and utility functions
- =======================================================
- =======================================================
+ --------------------------
 */
 
 // Log function
 var log = [];
 $z.log = function(str) {
 	log.push(str);
-	if (console && console.log) {
-		console.log(str);
+	if (typeof console != "undefined") {
+	  if (typeof console.log == "function") {
+		  console.log(str);
+	  }
 	}
 }
 
@@ -380,6 +373,20 @@ $z.rep = function(n, f) {
 		result.push(f());
 	}
 	return result;
+}
+
+// Merge a bunch of key-value objects
+$z.merge = function() {
+	var args = Array.prototype.slice.call(arguments);
+	var kv = {};
+	args.map(function(obj) {
+		for(var i in obj) {
+			if (obj.hasOwnProperty(i)) {
+				kv[i] = obj[i];
+			}
+		}
+	})
+	return kv;
 }
 
 /*
@@ -511,13 +518,9 @@ $z.preload = function(resources, options /* afterEach, after, width */) {
 	}
 };
 
-/*
- =======================================================
- =======================================================
- User input
- =======================================================
- =======================================================
-*/
+
+// User input
+// ----------
 
 function updateMouse(e) {
 	var posx = 0;
@@ -668,36 +671,18 @@ var keyValue = function(code) {
 	return 0;
 }
 
-// getKey("a","b","c",...,duration, after, once)
-// TODO: change {once} argument to {times}.
+// getKey(["a","b","c"],{duration: ..., after:, times: })
 // TODO: rewrite using addEventListener
-$z.getKey = function(options) {
-	var numArgs = arguments.length;
-	if (!numArgs) return;
-	
-	var keys = [], duration = 0, after = false, once = true;
-	for(var i = 0, arg = arguments[0]; i < numArgs; i++, arg = arguments[i]) {
-		if (typeof arg == "string") {
-			keys.push(arg);
-		} else if (typeof arg == "number") {
-			duration = arg;
-		} else if (typeof arg == "function") {
-			after = arg;
-		} else if (typeof arg == "boolean") {
-			once = arg;
-		}
-	}
-	
-	if (keys.length == 0) {
-		keys = "any";
-	}
+// TODO: fire handler after each key, or after #times have ended?
+$z.getKey = function(keys,options) {
 	
 	var previous = document.onkeydown;
 	var resetKeyHandler = function() {
 		document.onkeydown = previous;
 	}
+	var times = options.times || 1, after = options.after || false;
 	
-	if (duration) {
+	if (options.duration) {
 		setTimeout(resetKeyHandler, duration);
 	}
 	
@@ -711,7 +696,7 @@ $z.getKey = function(options) {
 			previous(e);
 		}
 		
-		var e = e || window.event;	
+		var e = e || window.event;
 		
 		// don't fire if special keys are also pressed
 		if (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey) {
@@ -734,12 +719,13 @@ $z.getKey = function(options) {
 			nodeName = e.srcElement.nodeName;
 		}
 		
-		// ignore keys pressed within an element that's not the body
-		if (nodeName != "BODY" && nodeName != "HTML") {
+		// ignore keys pressed inside input
+		if (nodeName == "INPUT" || nodeName == "TEXTAREA") {
 			return true;
 		}
 		
-		if (once) {
+		times -= 1;
+		if (times == 0) {
 			resetKeyHandler();
 		}
 		
@@ -753,7 +739,7 @@ $z.getKey = function(options) {
 		}
 		
 		if (after) {
-			after(value, endTime - startTime);
+			after({response: value, rt: endTime - startTime});
 		}
 		return false; // needed for propogation canceling to work
 	}
@@ -767,170 +753,107 @@ $z.getKey = function(options) {
  =======================================================
 */
 
+var hopUndefined = !Object.prototype.hasOwnProperty;
+
+// TODO: rename trialEnd process?
 var Stream = function(options) {
 	options = options || {};
 	
 	/* Use "o" because the child methods can potentially
 	be called via setTimeout. Using "this" would require
 	that we do scope binding on the child methods. */
-	var o = {
-		trials: options.trials || [],
-		completed: [],
-		trialStart: options.trialStart || function() {},
-		trialEnd: options.trialEnd || function() {},
-		setup: options.setup || function() {},
-		after: options.after || function() {},
-		initStatus: false,
-		slide: options.slide || false
+	
+	// things should get attached to the stream: trials, slide
+	for(var key in options) {
+	  if (hopUndefined || options.hasOwnProperty(key)) {
+	    this[key] = options[key];
+	  }
 	}
+	var _this = this;
+	this.completed = [];
+	
+	// these properties be "public" because it's conceivable that you'd
+	// want to modify them mid-stream
+	["trialStart","trialEnd","after"].map(function(prop) {
+	  if (!_this[prop]) {
+	    _this[prop] = function() {}
+	  }
+	})
+	
+	var init = false;
 
-	// wrapper for setup function
-	o._setup = function() {
-		o.initStatus = true;
-		if (o.slide) {
-			$z.showSlide( o.slide );
+	var start = function() {
+		if (!init) {
+			init = true;
+			if (this.before) {
+			  this.before();
+		  }
 		}
-		o.setup();
-	}
+		if (this.slide) {
+			$z.showSlide( this.slide );
+		}
 
-	o.start = function() {
-		if (!o.initStatus) o._setup();
-
-		var trial = o.trials[0];
+		var trial = this.trials[this.completed.length];
 		if (!trial) return;
 
-		o.trialStart(trial);
+		this.trialStart(trial);
 	}
+	this.start = bind(start,this);
 
-	o.end = function() {
-		var trial = o.trials.shift();
-		o.completed.push(trial);
-
-		o.trialEnd(trial);
-
-		if (o.trials.length) {
-			o.start();
-		} else {
-			o.after();
-		}
-	}
+	var end = function(data) {
+	  //var trial = this.trials[this.completed.length],
+	      //value = this.trialEnd(trial,data);
+	  
+	  //this.completed.push(value == null ? trial : value );
+	  this.completed.push(data);
+	  
+	  if (this.completed.length < this.trials.length) {
+	    this.start();
+	  } else {
+	    this.after();
+	  }
+	};
 	
-	// Could use jQuery or underscore to make this more compact,
-	// but it's worth it to write it out so we don't have dependence
-	// on any other libraries
-	this.trials = o.trials;
-	this.completed = o.completed;
-	this.trialStart = o.trialStart;
-	this.trialEnd = o.trialEnd;
-	this.setup = o.setup;
-	this.after = o.after;
-	this.initStatus = o.initStatus;
-	this.slide = o.slide;
-	this._setup = o._setup;
-	this.start = o.start;
-	this.end = o.end;
-	
+	this.end = bind(end,this);
 }
 
 $z.stream = function(options) {
 	return new Stream(options);
 }
 
-var LazyWhile = function(options) {
+// rename afterEach process?
+var Reactor = function(options) {
 	options = options || {};
 	
-	var me = this;
-	me.data = [], me.trials = [];
+	this.data = [], this.trials = [];
 	
-	me.start = options.start || function() {};
-	me.criterion = options.criterion || function() {};
-	me.after = options.after || function() {};
+	this.start = options.start || function() {};
+	this.criterion = options.criterion || function() {};
+	this.afterEach = options.afterEach || function() {};
+	this.afterAll = options.afterAll || function() {};
 	
-	me.respond = function(obj) {
-		me.data.push(obj);
+	var react = function(obj) {
+		var val = this.afterEach(obj);
+		this.data.push(val ? val : obj);
 		
-		if (!!me.criterion()) {
-			me.after();
+		if (this.criterion()) {
+			this.afterAll();
 			return;
 		} else {
-			me.start();
+			this.start();
 		}
 	}
+	
+	this.react = bind(react,this);
 }
 
-$z.criterion = function(options) {
-	return new LazyWhile(options);
+$z.reactor = function(options) {
+	return new Reactor(options);
 }
 
-var Staircase = function(options) {
-	options = options || {};
-	
-	var me = this;
-	
-	var settings = ["value", "step", "show", "responseHandler", "afterStep", "afterReversal"];
-	
-	for(var i in options) {
-		if (options.hasOwnProperty(i)) {
-			me[i] = options[i];
-		}
-	}
-	
-	me.data = [], me.reversals = [], me._finished = false;
-	
-	me.start = function() {
-		me._shift = false;
-		me.startTrial(me.value);
-	}
-	
-	// response must be boolean
-	me.respond = function() {
-		var response = me.responseHandler.apply(me, arguments);
-		if (!(typeof response === "boolean")) {
-			throw TypeError('Staircase responseHandler must return true or false');
-		}
-		
-		var reversal = !!(typeof me.lastResponse == "boolean" && me.lastResponse != response);
-		//console.log(me.lastResponse + "\t" + response + "\t" + reversal);
-		me.lastResponse = response;
-		
-		// record data
-		var datum = {value: me.value, response: response};
-		me.data.push(datum);
-		
-		if (reversal) { me.reversals.push(datum) }
-		
-		// compute new value
-		var step;
-		if (typeof me.step === "number") {
-			step = me.step;
-		} else if (me.step instanceof Array) {
-			if (reversal) {
-				me.step.shift();
-			}
-			step = me.step[0];
-		} else if (typeof me.step === "function") {
-			step = me.step.call(me, reversal);
-		}
-		
-		if (!step) {
-			me._finished = true;
-			return me.finished(); // todo: callback
-		} else {
-			/*
-			if response was above threshhold, we need to
-			decrease value. if response was below threshhold,
-			we need to increase value.
-			*/
-			me.value += (response ? -1 : 1) * step;
-		}
-		
-		if (!me._shift) me.start();
-	}
-	
-	me.shift = function() {
-		me._shift = true;
-		me.startTrial(me.value);
-	}
-}
+// TODO: at the beginning of reactor and stream, implement
+// options folding using merge?
+
+// TODO: notion of laziness? i.e. lazy streams and reactors don't auto-call .start()?
 
 })();
