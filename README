@@ -1,3 +1,5 @@
 zenjs is deprecated for now.
 
 I don't work on it anymore and it's no longer all that necessary - you can get by with a combination of jquery, underscore, and the right abstraction for advancing through trials.
+
+If you really want to use a library, try jspsych: http://www.jspsych.org
